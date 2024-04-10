@@ -1,0 +1,150 @@
+# VTS FULLBODY TRACKING
+_Version ALPHA 0.0.1_
+
+This plugin integrates full body tracking functionality using Mediapipe. 
+It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
+
+![Demo Tracking Arms](readme_img/Demo_Tracking_Arms.png)
+
+## THIS PLUGIN IS UNDER DEVELOPMENT
+
+This plugin may contain bugs and lack certain features.
+
+### How you can Help
+
+- **Live2D Rigger**: Help understand how to effectively rig models for the body parts feature
+- **Live2D Vtuber**: Experiment with usability and performance for movement and configuration in VTube Studio
+- **Developper**: Contributions are welcome to improve this plugin
+
+### Troubleshooting
+
+- Currently, there might be a latency of a few seconds
+- Tracking input may be inaccurate and exhibit occasional jumps
+- In most cases, you cannot use one camera simultaneously with two software. You can try the following solutions:
+    - Configure a virtual camera.
+    - Use two cameras.
+    - Use plugin tracking for hands and face (limited functionality).
+
+## Run the Plugin
+
+**Requirements**: Window, VTube Studio
+
+1. Download the executable
+1. Open VTube Studio
+2. Double-click on the executable file `VTS_Fullbody_Tracking.exe` to launch the plugin
+3. A small settings window will appear. Select your camera and click on the 'Start Tracking' button
+4. Allow the plugin in vtube Studio
+5. In your model's parameter settings, you can now choose body parts' X, Y, Z coordinates, and visibility as inputs
+6. A window displaying a preview of pose tracking will appear.
+
+If you dont know how plugin work in VTube Studio, you can find more infos in the official documentation: 
+[Vtube Studio Documentation - How to use Plugin](https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins)
+
+
+### Options Preview
+- **Peview Camera**: Displays the image captured by the camera
+- **Annotated Values**: Shows the X, Y, Z values for each body part
+
+| default                                                  | Preview Camera                                                       | Annotated Values                                                         |
+|----------------------------------------------------------|----------------------------------------------------------------------|--------------------------------------------------------------------------|
+| ![exemple_preview.png](readme_img/exemple_preview.png)   | ![exemple_camera_preview.png](readme_img/exemple_camera_preview.png) | ![exemple_annotated_values.png](readme_img/exemple_annotated_values.png) |
+
+**note**: You need to reload the plugin to switch settings.
+
+### Stop the Plugin
+
+If the close button on the settings window doesn't work, try spamming it. 
+If unsuccessful, use Task Manager (Ctrl + Shift + Escape or Ctrl + Alt + Delete) to end "VTS_Fullbody_Tracking.exe".
+
+## Custom Parameters
+![List Bodyparts MediaPipe](readme_img/list_bodyparts.png)
+*BlazePose 33 keypoint topology as COCO (colored with green) superset*
+https://blog.research.google/2020/08/on-device-real-time-body-pose-tracking.html
+
+This plugin will create new parameters in Vtube Studio, for each body part a parameter `_X`, `_Y`, `_Z` and `_VISIBILITY` will be available in your Vtube Studio.
+
+- x, y: Real-world 3-dimensional coordinates in meters, with the midpoint of the hips as the origin.
+- z: depth, with the depth at the midpoint of the hips as the origin. The smaller the value, the closer the landmark is to the camera. The magnitude of z uses roughly the same scale as x.
+- visibility: The likelihood of the landmark being visible within the image.
+
+### Body
+
+|               | Vtube Studio Parameters                                                                                                                                                               |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Shoulders** | `LEFT_SHOULDER_X` `LEFT_SHOULDER_Y` `LEFT_SHOULDER_Z` `LEFT_SHOULDER_VISIBILITY` `RIGHT_SHOULDER_X` `RIGHT_SHOULDER_Y` `RIGHT_SHOULDER_Z` `RIGHT_SHOULDER_VISIBILITY`                 |
+| **Elbows**    | `LEFT_ELBOW_X` `LEFT_ELBOW_Y` `LEFT_ELBOW_Z` `LEFT_ELBOW_VISIBILITY` `RIGHT_ELBOW_X` `RIGHT_ELBOW_Y` `RIGHT_ELBOW_Z` `RIGHT_ELBOW_VISIBILITY`                                         |
+| **Wrists**    | `LEFT_WRIST_X` `LEFT_WRIST_Y` `LEFT_WRIST_Z` `LEFT_WRIST_VISIBILITY` `RIGHT_WRIST_X` `RIGHT_WRIST_Y` `RIGHT_WRIST_Z` `RIGHT_WRIST_VISIBILITY`                                         |
+| **Hips**      | `LEFT_HIP_X` `LEFT_HIP_Y` `LEFT_HIP_Z` `LEFT_HIP_VISIBILITY` `RIGHT_HIP_X` `RIGHT_HIP_Y` `RIGHT_HIP_Z` `RIGHT_HIP_VISIBILITY`                                                         |
+| **Knees**     | `LEFT_KNEE_X` `LEFT_KNEE_Y` `LEFT_KNEE_Z` `LEFT_KNEE_VISIBILITY` `RIGHT_KNEE_X` `RIGHT_KNEE_Y` `RIGHT_KNEE_Z` `RIGHT_KNEE_VISIBILITY`                                                 |
+| **Ankles**    | `LEFT_ANKLE_X` `LEFT_ANKLE_Y` `LEFT_ANKLE_Z` `LEFT_ANKLE_VISIBILITY` `RIGHT_ANKLE_X` `RIGHT_ANKLE_Y` `RIGHT_ANKLE_Z` `RIGHT_ANKLE_VISIBILITY`                                         |
+| **Heels**     | `LEFT_HEEL_X` `LEFT_HEEL_Y` `LEFT_HEEL_Z` `LEFT_HEEL_VISIBILITY` `RIGHT_HEEL_X` `RIGHT_HEEL_Y` `RIGHT_HEEL_Z` `RIGHT_HEEL_VISIBILITY`                                                 |
+| **Feets**     | `LEFT_FOOT_INDEX_X` `LEFT_FOOT_INDEX_Y` `LEFT_FOOT_INDEX_Z` `LEFT_FOOT_INDEX_VISIBILITY` `RIGHT_FOOT_INDEX_X` `RIGHT_FOOT_INDEX_Y` `RIGHT_FOOT_INDEX_Z` `RIGHT_FOOT_INDEX_VISIBILITY` |
+
+### Face
+
+|                   | Vtube Studio Parameters                                                                                                                                                        |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Nose**          | `NOSE_X` `NOSE_Y` `NOSE_Z` `NOSE_VISIBILITY`                                                                                                                                   |
+| **Ears**          | `LEFT_EAR_X` `LEFT_EAR_Y` `LEFT_EAR_Z` `LEFT_EAR_VISIBILITY` `RIGHT_EAR_X` `RIGHT_EAR_Y` `RIGHT_EAR_Z` `RIGHT_EAR_VISIBILITY`                                                  |
+| **Eyes**          | `LEFT_EYE_X` `LEFT_EYE_Y` `LEFT_EYE_Z` `LEFT_EYE_VISIBILITY` `RIGHT_EYE_X` `RIGHT_EYE_Y` `RIGHT_EYE_Z` `RIGHT_EYE_VISIBILITY`                                                  |
+| **Inner Eyes**    | `LEFT_EYE_INNER_X` `LEFT_EYE_INNER_Y` `LEFT_EYE_INNER_Z` `LEFT_EYE_INNER_VISIBILITY` `RIGHT_EYE_INNER_X` `RIGHT_EYE_INNER_Y` `RIGHT_EYE_INNER_Z` `RIGHT_EYE_INNER_VISIBILITY`  |
+| **Outer Eyes**    | `LEFT_EYE_OUTER_X` `LEFT_EYE_OUTER_Y` `LEFT_EYE_OUTER_Z` `LEFT_IEYE_OUTER_VISIBILITY` `RIGHT_EYE_OUTER_X` `RIGHT_EYE_OUTER_Y` `RIGHT_EYE_OUTER_Z` `RIGHT_EYE_OUTER_VISIBILITY` |
+| **Mouth Corners** | `LEFT_MOUTH_X` `LEFT_MOUTH_Y` `LEFT_MOUTH_VISIBILITY` `LEFT_MOUTH_Z` `RIGHT_MOUTH_X` `RIGHT_MOUTH_Y` `RIGHT_MOUTH_Z` `RIGHT_MOUTH_VISIBILITY`                                  |
+
+### Hands
+
+|                   | Vtube Studio Parameters                                                                                                                                                        |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Pinkys**        | `LEFT_PINKY_X` `LEFT_PINKY_Y` `LEFT_PINKY_Z` `LEFT_PINKY_VISIBILITY` `RIGHT_PINKY_X` `RIGHT_PINKY_Y` `RIGHT_PINKY_Z` `RIGHT_PINKY_VISIBILITY`                                  |
+| **Indexs**        | `LEFT_INDEX_X` `LEFT_INDEX_Y` `LEFT_INDEX_Z` `LEFT_INDEX_VISIBILITY` `RIGHT_INDEX_X` `RIGHT_INDEX_Y` `RIGHT_INDEX_Z` `RIGHT_INDEX_VISIBILITY`                                  |
+| **Thumbs**        | `LEFT_THUMB_X` `LEFT_THUMB_Y` `LEFT_THUMB_Z` `LEFT_THUMB_VISIBILITY` `RIGHT_THUMB_X` `RIGHT_THUMB_Y` `RIGHT_THUMB_Z` `RIGHT_THUMB_VISIBILITY`                                  |
+
+
+## DEVELOPMENT
+
+### Requirements
+
+- Python 3.11
+
+Install dependencies
+
+```shell
+pip install -r requirements.txt
+```
+
+**note**: The plugin use the method `vts.vts_request.requestSetMultiParameterValue` from the library pyvts. 
+This method is not included in the latest released version 0.3.2. You will need it to run the plugin, which can be obtained from the current repository. Required method: https://github.com/Genteki/pyvts/blob/main/pyvts/vts_request.py l.246
+
+### Run Plugin
+
+- Open Vtube Studio
+- Start the plugin
+
+```shell
+python app.py
+```
+
+### Build executable
+
+```shell
+ pyinstaller --name VTS_Fullbody_Tracking-0.0.1 --add-data='models/*:models' -F -w .\app.py
+```
+
+## Documentations
+
+#### Mediapipe
+Available Pose Landmarker models: 
+https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/index#models
+mediapipe documentation - landmarker python: https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/python
+
+#### VTube Studio
+
+VTube Studio API: https://github.com/DenchiSoft/VTubeStudio
+
+#### Documentation Python Library
+mediapipe: https://pypi.org/project/mediapipe/ <br/>
+pyvts: https://genteki.github.io/pyvts/ <br/>
+pyinstaller: https://pyinstaller.org/en/stable/
+
+
+

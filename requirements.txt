@@ -1,0 +1,5 @@
+mediapipe
+pyvts
+opencv-python
+numpy
+pyinstaller
