@@ -8,7 +8,8 @@ It allows users to use tracked body parameters as inputs to control your Live2D 
 
 ## THIS PLUGIN IS UNDER DEVELOPMENT
 
-This plugin may contain bugs and lack certain features.
+This plugin may contain bugs and lack certain features.<br/>
+Join [Discord Server](https://discord.gg/vzWSQZ9bsE) for discuss about the plugin.
 
 ### How you can Help
 
@@ -24,6 +25,7 @@ This plugin may contain bugs and lack certain features.
     - Configure a virtual camera.
     - Use two cameras.
     - Use plugin tracking for hands and face (limited functionality).
+  
 
 ## Run the Plugin
 
@@ -40,6 +42,8 @@ This plugin may contain bugs and lack certain features.
 If you dont know how plugin work in VTube Studio, you can find more infos in the official documentation: 
 [Vtube Studio Documentation - How to use Plugin](https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins)
 
+**note**: The executable may be flagged by antivirus software; It's a false positive. The executable is built with the PyInstaller library, and this issue is common with this library. 
+If you prefer not to execute the .exe file, you can run the Python code from GitHub using the [instructions for developpers](https://github.com/jellydreams/VTS-Fullbody-Tracking?tab=readme-ov-file#development)
 
 ### Options Preview
 - **Peview Camera**: Displays the image captured by the camera
@@ -134,7 +138,7 @@ python app.py
 
 #### Mediapipe
 Available Pose Landmarker models: 
-https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/index#models
+https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/index#models<br/>
 mediapipe documentation - landmarker python: https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/python
 
 #### VTube Studio
