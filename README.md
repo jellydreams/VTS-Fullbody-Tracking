@@ -29,7 +29,7 @@ This plugin may contain bugs and lack certain features.
 
 **Requirements**: Window, VTube Studio
 
-1. Download the executable
+1. Download the executable from the [releases page](https://github.com/jellydreams/VTS-Fullbody-Tracking/releases)
 1. Open VTube Studio
 2. Double-click on the executable file `VTS_Fullbody_Tracking.exe` to launch the plugin
 3. A small settings window will appear. Select your camera and click on the 'Start Tracking' button
