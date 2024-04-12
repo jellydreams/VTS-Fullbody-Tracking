@@ -45,12 +45,12 @@ def window_tracking_configuration():
     camera_combobox.current(0)  # Sélect first camera by default
     camera_combobox.pack()
 
-    camera_label = Label(root, text="Options")
+    camera_label = Label(root, text="Tracking Preview Options ")
     camera_label.pack()
 
     # -- Option for showing original input when displaying tracking pose
     preview_checkbox_var = BooleanVar()
-    preview_checkbox = Checkbutton(root, text="Preview Camera", variable=preview_checkbox_var)
+    preview_checkbox = Checkbutton(root, text="Show Camera View", variable=preview_checkbox_var)
     preview_checkbox.pack()
 
     # -- Option for showing annotated values when displaying tracking pose
