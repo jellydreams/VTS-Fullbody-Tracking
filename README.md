@@ -1,5 +1,5 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.0.1_
+_Version ALPHA 0.0.2_
 
 This plugin integrates full body tracking functionality using Mediapipe. 
 It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
@@ -57,8 +57,7 @@ If you prefer not to execute the .exe file, you can run the Python code from Git
 
 ### Stop the Plugin
 
-If the close button on the settings window doesn't work, try spamming it. 
-If unsuccessful, use Task Manager (Ctrl + Shift + Escape or Ctrl + Alt + Delete) to end "VTS_Fullbody_Tracking.exe".
+Press `q` or `ESC` in the Tracking Preview window to stop the plugin.
 
 ## Custom Parameters
 ![List Bodyparts MediaPipe](readme_img/list_bodyparts.png)
@@ -131,7 +130,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller --name VTS_Fullbody_Tracking-0.0.1 --add-data='models/*:models' -F -w .\app.py
+ pyinstaller --name VTS_Fullbody_Tracking-0.0.2 --add-data='models/*:models' -F -w .\app.py
 ```
 
 ## Documentations
