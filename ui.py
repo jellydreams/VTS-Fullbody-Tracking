@@ -66,4 +66,4 @@ def window_tracking_configuration():
 
     tracking_configuration = get_configuration()
 
-    return tracking_configuration
+    return root, tracking_configuration

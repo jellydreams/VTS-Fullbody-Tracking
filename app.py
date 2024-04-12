@@ -11,7 +11,6 @@ from ui import window_tracking_configuration
 
 RESULT = None
 
-
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'models/pose_landmarker_full.task'))
 
 plugin_info = {
@@ -69,8 +68,9 @@ async def main(camera_id, preview_enabled, annotate_enabled):
 
     parameters = None
     timestamp = 0
+    running = True
 
-    while True:
+    while running:
 
         print('========== START LIVE TRACKING =========')
 
@@ -96,7 +96,9 @@ async def main(camera_id, preview_enabled, annotate_enabled):
                             # Display pose result in additional window
                             annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, preview_enabled, annotate_enabled)
                             cv2.imshow('Body Tracking', annotated_image)
-                            if cv2.waitKey(1) & 0xFF == ord('q'):
+                            if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
+                                cv2.destroyAllWindows()
+                                running = False
                                 break
 
                     if parameters:
@@ -113,9 +115,14 @@ if __name__ == '__main__':
 
     # --- OPEN USER WINDOW : CONFIGURATION TRACKING
 
-    camera_id, preview_enabled, annotate_enabled = window_tracking_configuration()
-
+    root, settings = window_tracking_configuration()
+    camera_id, preview_enabled, annotate_enabled = settings
     # ========= START TRACKING ==========
 
     asyncio.run(main(camera_id, preview_enabled, annotate_enabled))
+
+    # ========= STOP PLUGIN ==========
+
+    root.destroy()
+    print('=== VTS FULLBODY TRACKING STOPPED ===')
 
