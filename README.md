@@ -1,5 +1,5 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.0.2_
+_Version ALPHA 0.1.0_
 
 This plugin integrates full body tracking functionality using Mediapipe. 
 It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
@@ -49,9 +49,9 @@ If you prefer not to execute the .exe file, you can run the Python code from Git
 - **Peview Camera**: Displays the image captured by the camera
 - **Annotated Values**: Shows the X, Y, Z values for each body part
 
-| default                                                  | Preview Camera                                                       | Annotated Values                                                         |
-|----------------------------------------------------------|----------------------------------------------------------------------|--------------------------------------------------------------------------|
-| ![exemple_preview.png](readme_img/exemple_preview.png)   | ![exemple_camera_preview.png](readme_img/exemple_camera_preview.png) | ![exemple_annotated_values.png](readme_img/exemple_annotated_values.png) |
+| default                                                  | Preview Camera                                                       | 
+|----------------------------------------------------------|----------------------------------------------------------------------|
+| ![exemple_preview.png](readme_img/exemple_preview.png)   | ![exemple_camera_preview.png](readme_img/exemple_camera_preview.png) | 
 
 **note**: You need to reload the plugin to switch settings.
 
@@ -60,15 +60,16 @@ If you prefer not to execute the .exe file, you can run the Python code from Git
 Press `q` or `ESC` in the Tracking Preview window to stop the plugin.
 
 ## Custom Parameters
-![List Bodyparts MediaPipe](readme_img/list_bodyparts.png)
-*BlazePose 33 keypoint topology as COCO (colored with green) superset*
+![List Bodyparts MediaPipe](readme_img/list_bodyparts.png)<br/>
+*BlazePose 33 keypoint topology as COCO (colored with green) superset*<br/>
 https://blog.research.google/2020/08/on-device-real-time-body-pose-tracking.html
 
 This plugin will create new parameters in Vtube Studio, for each body part a parameter `_X`, `_Y`, `_Z` and `_VISIBILITY` will be available in your Vtube Studio.
 
-- x, y: Real-world 3-dimensional coordinates in meters, with the midpoint of the hips as the origin.
-- z: depth, with the depth at the midpoint of the hips as the origin. The smaller the value, the closer the landmark is to the camera. The magnitude of z uses roughly the same scale as x.
-- visibility: The likelihood of the landmark being visible within the image.
+- **X**: Controls the left-to-right position.
+- **Y**: Controls the top-to-bottom position.
+- **Z**: Controls the backward-to-forward position.
+- **VISIBILITY**: Controls the visibility, from visible to hidden.
 
 ### Body
 
@@ -130,7 +131,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller --name VTS_Fullbody_Tracking-0.0.2 --add-data='models/*:models' -F -w .\app.py
+ pyinstaller --name VTS_Fullbody_Tracking-0.1.0 --add-data='models/*:models' -F -w .\app.py
 ```
 
 ## Documentations

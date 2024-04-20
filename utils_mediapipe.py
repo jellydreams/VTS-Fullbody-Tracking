@@ -46,7 +46,56 @@ class BodyParts(Enum):
     RIGHT_FOOT_INDEX = 32
 
 
-def draw_landmarks_on_image(rgb_image, detection_result, preview=False, annotated=False):
+class BodyCenters(Enum):
+    """
+    Enum class defining the center of body parts.
+    """
+
+    NOSE = BodyParts.RIGHT_HIP
+    LEFT_EYE_INNER = BodyParts.LEFT_EYE
+    LEFT_EYE = BodyParts.RIGHT_HIP
+    LEFT_EYE_OUTER = BodyParts.RIGHT_HIP
+    RIGHT_EYE_INNER = BodyParts.RIGHT_HIP
+    RIGHT_EYE = BodyParts.RIGHT_HIP
+    RIGHT_EYE_OUTER = BodyParts.RIGHT_HIP
+    LEFT_EAR = BodyParts.RIGHT_HIP
+    RIGHT_EAR = BodyParts.RIGHT_HIP
+    MOUTH_LEFT = BodyParts.RIGHT_HIP
+    MOUTH_RIGHT = BodyParts.RIGHT_HIP
+
+    LEFT_SHOULDER = BodyParts.RIGHT_HIP
+    RIGHT_SHOULDER = BodyParts.RIGHT_HIP
+    LEFT_ELBOW = BodyParts.LEFT_SHOULDER
+    RIGHT_ELBOW = BodyParts.RIGHT_SHOULDER
+    LEFT_WRIST = BodyParts.LEFT_ELBOW
+    RIGHT_WRIST = BodyParts.RIGHT_ELBOW
+    LEFT_PINKY = BodyParts.LEFT_WRIST
+    RIGHT_PINKY = BodyParts.RIGHT_WRIST
+    LEFT_INDEX = BodyParts.LEFT_WRIST
+    RIGHT_INDEX = BodyParts.RIGHT_WRIST
+    LEFT_THUMB = BodyParts.LEFT_WRIST
+    RIGHT_THUMB = BodyParts.RIGHT_WRIST
+
+    LEFT_HIP = BodyParts.RIGHT_HIP
+    RIGHT_HIP = BodyParts.LEFT_HIP
+    LEFT_KNEE = BodyParts.LEFT_HIP
+    RIGHT_KNEE = BodyParts.RIGHT_HIP
+    LEFT_ANKLE = BodyParts.LEFT_KNEE
+    RIGHT_ANKLE = BodyParts.RIGHT_KNEE
+    LEFT_HEEL = BodyParts.LEFT_ANKLE
+    RIGHT_HEEL = BodyParts.RIGHT_ANKLE
+    LEFT_FOOT_INDEX = BodyParts.LEFT_ANKLE
+    RIGHT_FOOT_INDEX = BodyParts.RIGHT_ANKLE
+
+
+def get_part_from_name(i):
+    for part in BodyParts:
+        if part.value == i:
+            return part
+    raise None
+
+
+def draw_landmarks_on_image(rgb_image, detection_result, preview=False):
     """
     Draw landmarks on the input image.
 
@@ -83,26 +132,5 @@ def draw_landmarks_on_image(rgb_image, detection_result, preview=False, annotate
           pose_landmarks_proto,
           solutions.pose.POSE_CONNECTIONS,
           solutions.drawing_styles.get_default_pose_landmarks_style())
-
-        # -- Draw annotated values on the image
-        if annotated:
-
-            i = 0
-            pworld = detection_result.pose_world_landmarks[0]
-
-            for landmark in pose_landmarks:
-                # Convert normalized coordinates to image coordinates
-                image_height, image_width, _ = annotated_image.shape
-                landmark_px = (int(landmark.x * image_width), int(landmark.y * image_height))
-
-                # Add x, y, z values next to each landmark
-                text = f"x: {pworld[i].x:.2f}"
-                cv2.putText(annotated_image, text, (landmark_px[0], landmark_px[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 212, 0), 1, cv2.LINE_AA)
-                text = f"y: {pworld[i].y:.2f}"
-                cv2.putText(annotated_image, text, (landmark_px[0], landmark_px[1] + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(112, 0, 255), 1, cv2.LINE_AA)
-                text = f"z: {pworld[i].z:.2f}"
-                cv2.putText(annotated_image, text, (landmark_px[0], landmark_px[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (80, 255, 90), 1, cv2.LINE_AA)
-
-                i += 1
 
     return annotated_image

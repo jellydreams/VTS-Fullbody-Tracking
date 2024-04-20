@@ -30,8 +30,7 @@ def window_tracking_configuration():
         camera_id = available_cameras[camera_index]['id']
 
         preview_enabled = preview_checkbox_var.get()
-        annotate_enabled = annotate_checkbox_var.get()
-        return camera_id, preview_enabled, annotate_enabled
+        return camera_id, preview_enabled
 
     root = Tk()
     root.title("Camera Selection")
@@ -52,11 +51,6 @@ def window_tracking_configuration():
     preview_checkbox_var = BooleanVar()
     preview_checkbox = Checkbutton(root, text="Show Camera View", variable=preview_checkbox_var)
     preview_checkbox.pack()
-
-    # -- Option for showing annotated values when displaying tracking pose
-    annotate_checkbox_var = BooleanVar()
-    annotate_checkbox = Checkbutton(root, text="Annotated Values", variable=annotate_checkbox_var)
-    annotate_checkbox.pack()
 
     # -- Submit Configuration
     start_button = Button(root, text="Start Tracking", command=root.quit)

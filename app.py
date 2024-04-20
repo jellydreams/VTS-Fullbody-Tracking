@@ -6,7 +6,7 @@ import asyncio
 import cv2
 import os
 
-from utils_mediapipe import draw_landmarks_on_image, BodyParts
+from utils_mediapipe import draw_landmarks_on_image, BodyParts, BodyCenters, get_part_from_name
 from ui import window_tracking_configuration
 
 RESULT = None
@@ -20,7 +20,7 @@ plugin_info = {
 }
 
 
-async def main(camera_id, preview_enabled, annotate_enabled):
+async def main(camera_id, preview_enabled):
     # ----- MEDIAPIPE: LANDMARKER CONFIGURATION -----------
 
     # Create a PoseLandmarker object
@@ -61,7 +61,7 @@ async def main(camera_id, preview_enabled, annotate_enabled):
 
     for parameter_name in parameter_names:
         # Add custom parameters in VTube Studio
-        send_request_new_parameter = vts.vts_request.requestCustomParameter(parameter_name, min=-1, max=1)
+        send_request_new_parameter = vts.vts_request.requestCustomParameter(parameter_name, min=-10, max=10)
         await vts.request(send_request_new_parameter)
 
     # ---- LIVE TRACKING ----------------
@@ -94,7 +94,7 @@ async def main(camera_id, preview_enabled, annotate_enabled):
                             parameters = RESULT.pose_world_landmarks[0]
 
                             # Display pose result in additional window
-                            annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, preview_enabled, annotate_enabled)
+                            annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, preview_enabled)
                             cv2.imshow('Body Tracking', annotated_image)
                             if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
                                 cv2.destroyAllWindows()
@@ -102,11 +102,59 @@ async def main(camera_id, preview_enabled, annotate_enabled):
                                 break
 
                     if parameters:
+                        # Prepare values to send
+                        data = get_bodyparts_values(parameters)
+                        values = list(data.values())
+                        names = list(data.keys())
+
                         print('Update parameters in Vtube Studio')
                         # -- Update parameters in VTube Studio
-                        values = [parameters[body_part.value].__getattribute__(angle) for angle in ['x', 'y', 'z', 'visibility'] for body_part in BodyParts]
-                        send_request_parameter = vts.vts_request.requestSetMultiParameterValue(parameter_names, values, weight=1, face_found=True, mode='set')
+                        send_request_parameter = vts.vts_request.requestSetMultiParameterValue(names, values, weight=1, face_found=True, mode='set')
                         await vts.request(send_request_parameter)
+
+
+def get_bodyparts_values(parameters):
+    i = 0
+    values = {}
+    # Go through each tracked body part
+    for part in parameters:
+        # Find center for this part of the body
+        part_name = get_part_from_name(i)
+        part_center = BodyCenters[part_name.name]
+        center = parameters[part_center.value.value]
+        # Calculate values from new center
+        data = calcul_data(part, center, part_name.name)
+        values.update(data)
+        i += 1
+    return values
+
+
+def calcul_data(part, center, name):
+    """
+    Calculate body part values
+    :param part: Landmarks, body part to recalculate
+    :param center: Landmarks, body part used as new center
+    :param name: String, name of body part to calculate
+    :return: Dict with new values for each axis
+    """
+
+    x_name = name + '_X'
+    y_name = name + '_Y'
+    z_name = name + '_Z'
+    v_name = name + '_VISIBILITY'
+
+    x = (part.x - center.x) * 10
+    y = (part.y - center.y) * 10
+    z = (part.z - center.z) * 10
+
+    data = {
+        x_name: x,
+        y_name: y,
+        z_name: z,
+        v_name: part.visibility,
+    }
+
+    return data
 
 
 if __name__ == '__main__':
@@ -116,10 +164,10 @@ if __name__ == '__main__':
     # --- OPEN USER WINDOW : CONFIGURATION TRACKING
 
     root, settings = window_tracking_configuration()
-    camera_id, preview_enabled, annotate_enabled = settings
+    camera_id, preview_enabled = settings
     # ========= START TRACKING ==========
 
-    asyncio.run(main(camera_id, preview_enabled, annotate_enabled))
+    asyncio.run(main(camera_id, preview_enabled))
 
     # ========= STOP PLUGIN ==========
 
