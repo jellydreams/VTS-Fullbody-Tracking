@@ -57,8 +57,9 @@ async def main(camera_id, preview_enabled):
     print('Create parameters in VTube Studio')
 
     # Prepare parameter names for each body part
-    parameter_names = [body_part.name + '_' + angle for angle in ['X', 'Y', 'Z', 'VISIBILITY'] for body_part in BodyParts]
+    parameter_names = get_parameters_names()
 
+    # Maximum of 100 parameters allowed to be created in VTube Studio per plugin
     for parameter_name in parameter_names:
         # Add custom parameters in VTube Studio
         send_request_new_parameter = vts.vts_request.requestCustomParameter(parameter_name, min=-10, max=10)
@@ -113,17 +114,22 @@ async def main(camera_id, preview_enabled):
                         await vts.request(send_request_parameter)
 
 
+def get_parameters_names():
+    parameters_names = [body_part.name + '_' + angle for body_part in BodyParts for angle in ['X', 'Y', 'Z', 'VISIBILITY']]
+    return parameters_names
+
+
 def get_bodyparts_values(parameters):
     i = 0
     values = {}
     # Go through each tracked body part
-    for part in parameters:
+    for bodypart in BodyParts:
         # Find center for this part of the body
-        part_name = get_part_from_name(i)
-        part_center = BodyCenters[part_name.name]
-        center = parameters[part_center.value.value]
+        bodypart_center_name = BodyCenters[bodypart.name]
+        bodypart_center = parameters[bodypart_center_name.value.value]
+        bodypart_values = parameters[bodypart.value]
         # Calculate values from new center
-        data = calcul_data(part, center, part_name.name)
+        data = calcul_data(bodypart_values, bodypart_center, bodypart.name)
         values.update(data)
         i += 1
     return values

@@ -12,16 +12,16 @@ class BodyParts(Enum):
     """
 
     NOSE = 0
-    LEFT_EYE_INNER = 1
-    LEFT_EYE = 2
-    LEFT_EYE_OUTER = 3
-    RIGHT_EYE_INNER = 4
-    RIGHT_EYE = 5
-    RIGHT_EYE_OUTER = 6
+    # LEFT_EYE_INNER = 1
+    # LEFT_EYE = 2
+    # LEFT_EYE_OUTER = 3
+    # RIGHT_EYE_INNER = 4
+    # RIGHT_EYE = 5
+    # RIGHT_EYE_OUTER = 6
     LEFT_EAR = 7
     RIGHT_EAR = 8
-    MOUTH_LEFT = 9
-    MOUTH_RIGHT = 10
+    # MOUTH_LEFT = 9
+    # MOUTH_RIGHT = 10
     LEFT_SHOULDER = 11
     RIGHT_SHOULDER = 12
     LEFT_ELBOW = 13
@@ -52,16 +52,16 @@ class BodyCenters(Enum):
     """
 
     NOSE = BodyParts.RIGHT_HIP
-    LEFT_EYE_INNER = BodyParts.LEFT_EYE
-    LEFT_EYE = BodyParts.RIGHT_HIP
-    LEFT_EYE_OUTER = BodyParts.RIGHT_HIP
-    RIGHT_EYE_INNER = BodyParts.RIGHT_HIP
-    RIGHT_EYE = BodyParts.RIGHT_HIP
-    RIGHT_EYE_OUTER = BodyParts.RIGHT_HIP
+    # LEFT_EYE_INNER = BodyParts.LEFT_EYE
+    # LEFT_EYE = BodyParts.RIGHT_HIP
+    # LEFT_EYE_OUTER = BodyParts.RIGHT_HIP
+    # RIGHT_EYE_INNER = BodyParts.RIGHT_HIP
+    # RIGHT_EYE = BodyParts.RIGHT_HIP
+    # RIGHT_EYE_OUTER = BodyParts.RIGHT_HIP
     LEFT_EAR = BodyParts.RIGHT_HIP
     RIGHT_EAR = BodyParts.RIGHT_HIP
-    MOUTH_LEFT = BodyParts.RIGHT_HIP
-    MOUTH_RIGHT = BodyParts.RIGHT_HIP
+    # MOUTH_LEFT = BodyParts.RIGHT_HIP
+    # MOUTH_RIGHT = BodyParts.RIGHT_HIP
 
     LEFT_SHOULDER = BodyParts.RIGHT_HIP
     RIGHT_SHOULDER = BodyParts.RIGHT_HIP

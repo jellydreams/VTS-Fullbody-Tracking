@@ -1,5 +1,5 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.1.0_
+_Version ALPHA 0.1.1_
 
 This plugin integrates full body tracking functionality using Mediapipe. 
 It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
@@ -9,7 +9,7 @@ It allows users to use tracked body parameters as inputs to control your Live2D 
 ## THIS PLUGIN IS UNDER DEVELOPMENT
 
 This plugin may contain bugs and lack certain features.<br/>
-Join [Discord Server](https://discord.gg/vzWSQZ9bsE) for discuss about the plugin.
+Join [Discord Server](https://discord.gg/9K9gejWQ3s) for discuss about the plugin.
 
 ### How you can Help
 
@@ -61,8 +61,6 @@ Press `q` or `ESC` in the Tracking Preview window to stop the plugin.
 
 ## Custom Parameters
 ![List Bodyparts MediaPipe](readme_img/list_bodyparts.png)<br/>
-*BlazePose 33 keypoint topology as COCO (colored with green) superset*<br/>
-https://blog.research.google/2020/08/on-device-real-time-body-pose-tracking.html
 
 This plugin will create new parameters in Vtube Studio, for each body part a parameter `_X`, `_Y`, `_Z` and `_VISIBILITY` will be available in your Vtube Studio.
 
@@ -90,10 +88,6 @@ This plugin will create new parameters in Vtube Studio, for each body part a par
 |-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Nose**          | `NOSE_X` `NOSE_Y` `NOSE_Z` `NOSE_VISIBILITY`                                                                                                                                   |
 | **Ears**          | `LEFT_EAR_X` `LEFT_EAR_Y` `LEFT_EAR_Z` `LEFT_EAR_VISIBILITY` `RIGHT_EAR_X` `RIGHT_EAR_Y` `RIGHT_EAR_Z` `RIGHT_EAR_VISIBILITY`                                                  |
-| **Eyes**          | `LEFT_EYE_X` `LEFT_EYE_Y` `LEFT_EYE_Z` `LEFT_EYE_VISIBILITY` `RIGHT_EYE_X` `RIGHT_EYE_Y` `RIGHT_EYE_Z` `RIGHT_EYE_VISIBILITY`                                                  |
-| **Inner Eyes**    | `LEFT_EYE_INNER_X` `LEFT_EYE_INNER_Y` `LEFT_EYE_INNER_Z` `LEFT_EYE_INNER_VISIBILITY` `RIGHT_EYE_INNER_X` `RIGHT_EYE_INNER_Y` `RIGHT_EYE_INNER_Z` `RIGHT_EYE_INNER_VISIBILITY`  |
-| **Outer Eyes**    | `LEFT_EYE_OUTER_X` `LEFT_EYE_OUTER_Y` `LEFT_EYE_OUTER_Z` `LEFT_IEYE_OUTER_VISIBILITY` `RIGHT_EYE_OUTER_X` `RIGHT_EYE_OUTER_Y` `RIGHT_EYE_OUTER_Z` `RIGHT_EYE_OUTER_VISIBILITY` |
-| **Mouth Corners** | `LEFT_MOUTH_X` `LEFT_MOUTH_Y` `LEFT_MOUTH_VISIBILITY` `LEFT_MOUTH_Z` `RIGHT_MOUTH_X` `RIGHT_MOUTH_Y` `RIGHT_MOUTH_Z` `RIGHT_MOUTH_VISIBILITY`                                  |
 
 ### Hands
 
@@ -131,15 +125,16 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller --name VTS_Fullbody_Tracking-0.1.0 --add-data='models/*:models' -F -w .\app.py
+ pyinstaller --name VTS_Fullbody_Tracking-0.1.1 --add-data='models/*:models' -F -w .\app.py
 ```
 
 ## Documentations
 
 #### Mediapipe
-Available Pose Landmarker models: 
-https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/index#models<br/>
-mediapipe documentation - landmarker python: https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/python
+mediapipe documentation -[Available Pose Landmarker models](https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/index#models)<br/>
+mediapipe documentation - [landmarker python](https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/python)<br/>
+Blog Research Google - [On-device, Real-time Body Pose Tracking with MediaPipe BlazePose](https://blog.research.google/2020/08/on-device-real-time-body-pose-tracking.html)
+
 
 #### VTube Studio
 
