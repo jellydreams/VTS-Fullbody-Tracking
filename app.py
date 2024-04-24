@@ -91,8 +91,8 @@ async def main(camera_id, preview_enabled):
 
                     if RESULT:
                         if RESULT.pose_world_landmarks:
-                            # Get coordinates in meters from hip as midpoint
-                            parameters = RESULT.pose_world_landmarks[0]
+                            # Get coordinates
+                            parameters = RESULT
 
                             # Display pose result in additional window
                             annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, preview_enabled)
@@ -122,16 +122,28 @@ def get_parameters_names():
 def get_bodyparts_values(parameters):
     i = 0
     values = {}
+
+    # Get coordinates from hip as midpoint
+    parameters_world = parameters.pose_world_landmarks[0]
+
     # Go through each tracked body part
     for bodypart in BodyParts:
         # Find center for this part of the body
         bodypart_center_name = BodyCenters[bodypart.name]
-        bodypart_center = parameters[bodypart_center_name.value.value]
-        bodypart_values = parameters[bodypart.value]
+        bodypart_center = parameters_world[bodypart_center_name.value.value]
+        bodypart_values = parameters_world[bodypart.value]
         # Calculate values from new center
         data = calcul_data(bodypart_values, bodypart_center, bodypart.name)
         values.update(data)
         i += 1
+
+    # Retrieve coordinates from the image
+    parameters_img = parameters.pose_landmarks[0]
+    # Utilize the right hip to control body position in space using image coordinates
+    values[BodyParts.RIGHT_HIP.name + '_X'] = parameters_img[BodyParts.RIGHT_HIP.value].x
+    values[BodyParts.RIGHT_HIP.name + '_Y'] = parameters_img[BodyParts.RIGHT_HIP.value].y
+    values[BodyParts.RIGHT_HIP.name + '_Z'] = parameters_img[BodyParts.RIGHT_HIP.value].z
+
     return values
 
 
