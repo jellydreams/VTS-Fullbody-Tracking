@@ -2,12 +2,25 @@ from tkinter import ttk, Tk, Label, Button, BooleanVar, Checkbutton, Entry, Fram
 import cv2
 
 from info import VERSION
+from pygrabber.dshow_graph import FilterGraph
+
+
+def get_available_cameras_names():
+    """Retrieve system names for cameras"""
+    devices = FilterGraph().get_input_devices()
+    available_cameras = {}
+
+    for device_index, device_name in enumerate(devices):
+        available_cameras[device_index] = device_name
+
+    return available_cameras
 
 
 def get_available_cameras():
     """ Retrieves a list of connected cameras available for tracking """
 
     available_cameras = []
+    names = get_available_cameras_names()
 
     # Check the first 20 cameras
     for i in range(0, 20):
@@ -15,8 +28,7 @@ def get_available_cameras():
         if cap.isOpened():
             _, name = cap.read()
             if not name is None:
-                # TODO: Retrieve system names for cameras
-                available_cameras.append({'label': f"Camera {i}: {name.shape[1]}x{name.shape[0]}", 'id': i})
+                available_cameras.append({'label': f"Camera {i}: {names[i]} {name.shape[1]}x{name.shape[0]}", 'id': i})
             cap.release()
 
     return available_cameras
@@ -53,7 +65,8 @@ def window_tracking_configuration():
         camera_label = Label(root, text="Select Camera:")
         camera_label.pack()
         camera_options = [info['label'] for info in available_cameras]
-        camera_combobox = ttk.Combobox(root, values=camera_options, state="readonly")
+        max_length_label = max(len(option) for option in camera_options)
+        camera_combobox = ttk.Combobox(root, values=camera_options, state="readonly", width=max_length_label)
         camera_combobox.current(0)  # Sélect first camera by default
         camera_combobox.pack()
 
