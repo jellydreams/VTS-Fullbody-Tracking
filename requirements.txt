@@ -3,3 +3,4 @@ pyvts
 opencv-python
 numpy
 pyinstaller
+pygrabber

@@ -1,5 +1,5 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.1.2_
+_Version ALPHA 0.1.3_
 
 This plugin integrates full body tracking functionality using Mediapipe. 
 It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
@@ -7,37 +7,31 @@ It allows users to use tracked body parameters as inputs to control your Live2D 
 ![Demo Tracking Arms](readme_img/Demo_Tracking_Arms.png)
 
 ## THIS PLUGIN IS UNDER DEVELOPMENT
-
-This plugin may contain bugs and lack certain features.<br/>
+This plugin may contain bugs and lack certain features.<br>
+Visit the [Wiki](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki) for more information on how the plugin works <br>
 Join [Discord Server](https://discord.gg/9K9gejWQ3s) for discuss about the plugin.
 
 ### How you can Help
-
 - **Live2D Rigger**: Help understand how to effectively rig models for the body parts feature
 - **Live2D Vtuber**: Experiment with usability and performance for movement and configuration in VTube Studio
 - **Developper**: Contributions are welcome to improve this plugin
 
 ### Troubleshooting
-
 - Currently, there might be a latency of a few seconds
 - Tracking input may be inaccurate and exhibit occasional jumps
-- In most cases, you cannot use one camera simultaneously with two software. You can try the following solutions:
-    - Configure a virtual camera.
-    - Use two cameras.
-    - Use plugin tracking for hands and face (limited functionality).
-  
 
 ## Run the Plugin
 
 **Requirements**: Window, VTube Studio
 
 1. Download the executable from the [releases page](https://github.com/jellydreams/VTS-Fullbody-Tracking/releases)
-1. Open VTube Studio
-2. Double-click on the executable file `VTS_Fullbody_Tracking.exe` to launch the plugin
-3. A small settings window will appear. Select your camera and click on the 'Start Tracking' button
-4. Allow the plugin in vtube Studio
-5. In your model's parameter settings, you can now choose body parts' X, Y, Z coordinates, and visibility as inputs
-6. A window displaying a preview of pose tracking will appear.
+2. Open VTube Studio
+3. Connect a camera
+4. Double-click on the executable file `VTS_Fullbody_Tracking.exe` to launch the plugin
+5. A small settings window will appear. Select your camera and click on the 'Start Tracking' button
+6. Allow the plugin in vtube Studio
+7. Window displaying a preview of pose tracking will appear.
+8. In your model's parameter settings, you can now choose body parts X, Y, Z coordinates, and visibility as inputs
 
 If you dont know how plugin work in VTube Studio, you can find more infos in the official documentation: 
 [Vtube Studio Documentation - How to use Plugin](https://github.com/DenchiSoft/VTubeStudio/wiki/Plugins#how-to-use-plugins)
@@ -125,7 +119,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller --name VTS_Fullbody_Tracking-0.1.2 --add-data='models/*:models' -F -w .\app.py
+ pyinstaller --name VTS_Fullbody_Tracking-0.1.3 --add-data='models/*:models' -F -w .\app.py
 ```
 
 ## Documentations
