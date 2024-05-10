@@ -19,9 +19,13 @@ plugin_info = {
     "authentication_token_path": "./token.txt"
 }
 
+vts_api = {"version": "1.0", "name": "VTubeStudioPublicAPI", "port": 8001}
 
-async def main(camera_id, preview_enabled):
+
+async def main(settings):
     # ----- MEDIAPIPE: LANDMARKER CONFIGURATION -----------
+
+    vts_api['port'] = settings['port']
 
     # Create a PoseLandmarker object
     BaseOptions = mp.tasks.BaseOptions
@@ -42,7 +46,7 @@ async def main(camera_id, preview_enabled):
     # ----- VTUBE STUDIO: CONNECTION -------------
 
     # Initialize VTube Studio connection
-    vts = pyvts.vts(plugin_info=plugin_info)
+    vts = pyvts.vts(plugin_info=plugin_info, vts_api_info=vts_api)
     await vts.connect()
 
     # Authenticate with VTube Studio API
@@ -51,6 +55,7 @@ async def main(camera_id, preview_enabled):
     await vts.request_authenticate()  # use token
 
     #TODO: Error Message if Vtube Studio not open
+    #TODO: Error Message if Port cant connect
 
     # ---- VTUBE STUDIO: INITIATE CUSTOM PARAMETERS ------
 
@@ -75,7 +80,7 @@ async def main(camera_id, preview_enabled):
 
         print('========== START LIVE TRACKING =========')
 
-        cap = cv2.VideoCapture(camera_id)
+        cap = cv2.VideoCapture(settings['camera_id'])
         with PoseLandmarker.create_from_options(options) as landmarker:
 
             # -- LOOP Through Video
@@ -95,7 +100,7 @@ async def main(camera_id, preview_enabled):
                             parameters = RESULT
 
                             # Display pose result in additional window
-                            annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, preview_enabled)
+                            annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, settings['preview_enabled'])
                             cv2.imshow('Body Tracking', annotated_image)
                             if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
                                 cv2.destroyAllWindows()
@@ -182,10 +187,9 @@ if __name__ == '__main__':
     # --- OPEN USER WINDOW : CONFIGURATION TRACKING
 
     root, settings = window_tracking_configuration()
-    camera_id, preview_enabled = settings
     # ========= START TRACKING ==========
 
-    asyncio.run(main(camera_id, preview_enabled))
+    asyncio.run(main(settings))
 
     # ========= STOP PLUGIN ==========
 

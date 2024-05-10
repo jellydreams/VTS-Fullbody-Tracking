@@ -1,4 +1,4 @@
-from tkinter import ttk, Tk, Label, Button, BooleanVar, Checkbutton
+from tkinter import ttk, Tk, Label, Button, BooleanVar, Checkbutton, Entry, Frame, LEFT, RIGHT
 import cv2
 
 
@@ -27,10 +27,18 @@ def window_tracking_configuration():
         """ Retrieves configuration values from UI form """
         camera_name = camera_combobox.get()
         camera_index = camera_options.index(camera_name)
-        camera_id = available_cameras[camera_index]['id']
+        #camera_id = available_cameras[camera_index]['id']
 
-        preview_enabled = preview_checkbox_var.get()
-        return camera_id, preview_enabled
+        port = port_entry.get()
+
+        settings = {
+            'camera_id': available_cameras[camera_index]['id'],
+            'preview_enabled': preview_checkbox_var.get(),
+            'port': port if port else 8001
+        }
+
+        return settings
+
 
     root = Tk()
     root.title("Camera Selection")
@@ -52,6 +60,18 @@ def window_tracking_configuration():
     preview_checkbox = Checkbutton(root, text="Show Camera View", variable=preview_checkbox_var)
     preview_checkbox.pack()
 
+    # -- Custom Port Entry
+    port_frame = Frame(root)
+    port_frame.pack(anchor="w", pady=(10, 0))
+
+    port_label = Label(port_frame, text="API Port:")
+    port_label.pack(side=LEFT)
+
+    vcmd = root.register(validate_port_input)
+    port_entry = Entry(port_frame, validate="key", validatecommand=(vcmd, '%P'), width=10)
+    port_entry.insert(0, "8001")  # Default value
+    port_entry.pack(side=RIGHT)
+
     # -- Submit Configuration
     start_button = Button(root, text="Start Tracking", command=root.quit)
     start_button.pack()
@@ -61,3 +81,13 @@ def window_tracking_configuration():
     tracking_configuration = get_configuration()
 
     return root, tracking_configuration
+
+
+def validate_port_input(new_value):
+    """ Validate port input """
+    if new_value.isdigit() and int(new_value) >= 0:
+        return True
+    elif new_value == "":
+        return True
+    else:
+        return False
