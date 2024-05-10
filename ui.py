@@ -1,14 +1,16 @@
 from tkinter import ttk, Tk, Label, Button, BooleanVar, Checkbutton, Entry, Frame, LEFT, RIGHT
 import cv2
 
+from info import VERSION
+
 
 def get_available_cameras():
     """ Retrieves a list of connected cameras available for tracking """
 
     available_cameras = []
 
-    # Check the first ten cameras
-    for i in range(0, 10):
+    # Check the first 20 cameras
+    for i in range(0, 20):
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
             _, name = cap.read()
@@ -27,7 +29,6 @@ def window_tracking_configuration():
         """ Retrieves configuration values from UI form """
         camera_name = camera_combobox.get()
         camera_index = camera_options.index(camera_name)
-        #camera_id = available_cameras[camera_index]['id']
 
         port = port_entry.get()
 
@@ -39,42 +40,49 @@ def window_tracking_configuration():
 
         return settings
 
-
     root = Tk()
-    root.title("Camera Selection")
-    camera_label = Label(root, text="Select Camera:")
-    camera_label.pack()
+    root.title(f"VTS Fullbody Tracking {VERSION} - Settings")
 
-    # -- Camera Selection
+    title = Label(root, text=f"VTS Fullbody Tracking {VERSION}")
+    title.pack()
+
     available_cameras = get_available_cameras()
-    camera_options = [info['label'] for info in available_cameras]
-    camera_combobox = ttk.Combobox(root, values=camera_options, state="readonly")
-    camera_combobox.current(0)  # Sélect first camera by default
-    camera_combobox.pack()
 
-    camera_label = Label(root, text="Tracking Preview Options ")
-    camera_label.pack()
+    if available_cameras:
+        # -- Camera Selection
+        camera_label = Label(root, text="Select Camera:")
+        camera_label.pack()
+        camera_options = [info['label'] for info in available_cameras]
+        camera_combobox = ttk.Combobox(root, values=camera_options, state="readonly")
+        camera_combobox.current(0)  # Sélect first camera by default
+        camera_combobox.pack()
 
-    # -- Option for showing original input when displaying tracking pose
-    preview_checkbox_var = BooleanVar()
-    preview_checkbox = Checkbutton(root, text="Show Camera View", variable=preview_checkbox_var)
-    preview_checkbox.pack()
+        camera_label = Label(root, text="Tracking Preview Options ")
+        camera_label.pack()
 
-    # -- Custom Port Entry
-    port_frame = Frame(root)
-    port_frame.pack(anchor="w", pady=(10, 0))
+        # -- Option for showing original input when displaying tracking pose
+        preview_checkbox_var = BooleanVar()
+        preview_checkbox = Checkbutton(root, text="Show Camera View", variable=preview_checkbox_var)
+        preview_checkbox.pack()
 
-    port_label = Label(port_frame, text="API Port:")
-    port_label.pack(side=LEFT)
+        # -- Custom Port Entry
+        port_frame = Frame(root)
+        port_frame.pack(anchor="w", pady=(10, 0))
 
-    vcmd = root.register(validate_port_input)
-    port_entry = Entry(port_frame, validate="key", validatecommand=(vcmd, '%P'), width=10)
-    port_entry.insert(0, "8001")  # Default value
-    port_entry.pack(side=RIGHT)
+        port_label = Label(port_frame, text="API Port:")
+        port_label.pack(side=LEFT)
 
-    # -- Submit Configuration
-    start_button = Button(root, text="Start Tracking", command=root.quit)
-    start_button.pack()
+        vcmd = root.register(validate_port_input)
+        port_entry = Entry(port_frame, validate="key", validatecommand=(vcmd, '%P'), width=10)
+        port_entry.insert(0, "8001")  # Default value
+        port_entry.pack(side=RIGHT)
+
+        # -- Submit Configuration
+        start_button = Button(root, text="Start Tracking", command=root.quit)
+        start_button.pack()
+    else:
+        camera_label = Label(root, text="No camera found\n Connect a camera before running the plugin")
+        camera_label.pack()
 
     root.mainloop()
 

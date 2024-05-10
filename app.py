@@ -6,8 +6,9 @@ import asyncio
 import cv2
 import os
 
-from utils_mediapipe import draw_landmarks_on_image, BodyParts, BodyCenters, get_part_from_name
+from utils_mediapipe import draw_landmarks_on_image, BodyParts, BodyCenters
 from ui import window_tracking_configuration
+from info import VERSION
 
 RESULT = None
 
@@ -101,7 +102,7 @@ async def main(settings):
 
                             # Display pose result in additional window
                             annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, settings['preview_enabled'])
-                            cv2.imshow('Body Tracking', annotated_image)
+                            cv2.imshow(f'VTS FullBody Tracking {VERSION}', annotated_image)
                             if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
                                 cv2.destroyAllWindows()
                                 running = False
