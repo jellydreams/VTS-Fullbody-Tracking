@@ -63,7 +63,7 @@ class BodyCenters(Enum):
     # MOUTH_LEFT = BodyParts.RIGHT_HIP
     # MOUTH_RIGHT = BodyParts.RIGHT_HIP
 
-    LEFT_SHOULDER = BodyParts.RIGHT_HIP
+    LEFT_SHOULDER = BodyParts.LEFT_HIP
     RIGHT_SHOULDER = BodyParts.RIGHT_HIP
     LEFT_ELBOW = BodyParts.LEFT_SHOULDER
     RIGHT_ELBOW = BodyParts.RIGHT_SHOULDER
