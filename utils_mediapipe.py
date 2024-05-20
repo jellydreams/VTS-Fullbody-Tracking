@@ -84,8 +84,8 @@ class BodyCenters(Enum):
     RIGHT_ANKLE = BodyParts.RIGHT_KNEE
     LEFT_HEEL = BodyParts.LEFT_ANKLE
     RIGHT_HEEL = BodyParts.RIGHT_ANKLE
-    LEFT_FOOT_INDEX = BodyParts.LEFT_ANKLE
-    RIGHT_FOOT_INDEX = BodyParts.RIGHT_ANKLE
+    LEFT_FOOT_INDEX = BodyParts.LEFT_HEEL
+    RIGHT_FOOT_INDEX = BodyParts.RIGHT_HEEL
 
 
 def get_part_from_name(i):
