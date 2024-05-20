@@ -1,5 +1,5 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.1.3_
+_Version ALPHA 0.1.4_
 
 This plugin integrates full body tracking functionality using Mediapipe. 
 It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
@@ -41,7 +41,6 @@ If you prefer not to execute the .exe file, you can run the Python code from Git
 
 ### Options Preview
 - **Peview Camera**: Displays the image captured by the camera
-- **Annotated Values**: Shows the X, Y, Z values for each body part
 
 | default                                                  | Preview Camera                                                       | 
 |----------------------------------------------------------|----------------------------------------------------------------------|
@@ -74,7 +73,7 @@ This plugin will create new parameters in Vtube Studio, for each body part a par
 | **Knees**     | `LEFT_KNEE_X` `LEFT_KNEE_Y` `LEFT_KNEE_Z` `LEFT_KNEE_VISIBILITY` `RIGHT_KNEE_X` `RIGHT_KNEE_Y` `RIGHT_KNEE_Z` `RIGHT_KNEE_VISIBILITY`                                                 |
 | **Ankles**    | `LEFT_ANKLE_X` `LEFT_ANKLE_Y` `LEFT_ANKLE_Z` `LEFT_ANKLE_VISIBILITY` `RIGHT_ANKLE_X` `RIGHT_ANKLE_Y` `RIGHT_ANKLE_Z` `RIGHT_ANKLE_VISIBILITY`                                         |
 | **Heels**     | `LEFT_HEEL_X` `LEFT_HEEL_Y` `LEFT_HEEL_Z` `LEFT_HEEL_VISIBILITY` `RIGHT_HEEL_X` `RIGHT_HEEL_Y` `RIGHT_HEEL_Z` `RIGHT_HEEL_VISIBILITY`                                                 |
-| **Feets**     | `LEFT_FOOT_INDEX_X` `LEFT_FOOT_INDEX_Y` `LEFT_FOOT_INDEX_Z` `LEFT_FOOT_INDEX_VISIBILITY` `RIGHT_FOOT_INDEX_X` `RIGHT_FOOT_INDEX_Y` `RIGHT_FOOT_INDEX_Z` `RIGHT_FOOT_INDEX_VISIBILITY` |
+| **Feet**      | `LEFT_FOOT_INDEX_X` `LEFT_FOOT_INDEX_Y` `LEFT_FOOT_INDEX_Z` `LEFT_FOOT_INDEX_VISIBILITY` `RIGHT_FOOT_INDEX_X` `RIGHT_FOOT_INDEX_Y` `RIGHT_FOOT_INDEX_Z` `RIGHT_FOOT_INDEX_VISIBILITY` |
 
 ### Face
 
@@ -87,7 +86,7 @@ This plugin will create new parameters in Vtube Studio, for each body part a par
 
 |                   | Vtube Studio Parameters                                                                                                                                                        |
 |-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Pinkys**        | `LEFT_PINKY_X` `LEFT_PINKY_Y` `LEFT_PINKY_Z` `LEFT_PINKY_VISIBILITY` `RIGHT_PINKY_X` `RIGHT_PINKY_Y` `RIGHT_PINKY_Z` `RIGHT_PINKY_VISIBILITY`                                  |
+| **Pinkies**       | `LEFT_PINKY_X` `LEFT_PINKY_Y` `LEFT_PINKY_Z` `LEFT_PINKY_VISIBILITY` `RIGHT_PINKY_X` `RIGHT_PINKY_Y` `RIGHT_PINKY_Z` `RIGHT_PINKY_VISIBILITY`                                  |
 | **Indexs**        | `LEFT_INDEX_X` `LEFT_INDEX_Y` `LEFT_INDEX_Z` `LEFT_INDEX_VISIBILITY` `RIGHT_INDEX_X` `RIGHT_INDEX_Y` `RIGHT_INDEX_Z` `RIGHT_INDEX_VISIBILITY`                                  |
 | **Thumbs**        | `LEFT_THUMB_X` `LEFT_THUMB_Y` `LEFT_THUMB_Z` `LEFT_THUMB_VISIBILITY` `RIGHT_THUMB_X` `RIGHT_THUMB_Y` `RIGHT_THUMB_Z` `RIGHT_THUMB_VISIBILITY`                                  |
 
@@ -107,6 +106,8 @@ pip install -r requirements.txt
 **note**: The plugin use the method `vts.vts_request.requestSetMultiParameterValue` from the library pyvts. 
 This method is not included in the latest released version 0.3.2. You will need it to run the plugin, which can be obtained from the current repository. Required method: https://github.com/Genteki/pyvts/blob/main/pyvts/vts_request.py l.246
 
+add parameter `ping_interval=None` in pyvts.connect method
+
 ### Run Plugin
 
 - Open Vtube Studio
@@ -122,7 +123,7 @@ python app.py
  pyinstaller --name VTS_Fullbody_Tracking-0.1.3 --add-data='models/*:models' -F -w .\app.py
 ```
 
-## Documentations
+## Documentation
 
 #### Mediapipe
 mediapipe documentation -[Available Pose Landmarker models](https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/index#models)<br/>
