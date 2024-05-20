@@ -95,7 +95,7 @@ def get_part_from_name(i):
     raise None
 
 
-def draw_landmarks_on_image(rgb_image, detection_result, preview=False):
+def draw_landmarks_on_image(img, detection_result):
     """
     Draw landmarks on the input image.
 
@@ -109,15 +109,6 @@ def draw_landmarks_on_image(rgb_image, detection_result, preview=False):
     # Fetch the image coordinates of the pose landmarks for drawing the pose on the image
     pose_landmarks_list = detection_result.pose_landmarks
 
-    # -- Display the original input or an empty image as a base
-    if preview:
-        # Use the input image as a base if preview configuration is enabled
-        annotated_image = np.copy(rgb_image)
-    else:
-        # Create an empty image with the same dimensions as the input image
-        height, width, _ = rgb_image.shape
-        annotated_image = np.zeros((height, width, 3), dtype=np.uint8)
-
     # - Loop through the detected poses to visualize
     for idx in range(len(pose_landmarks_list)):
         pose_landmarks = pose_landmarks_list[idx]
@@ -128,9 +119,9 @@ def draw_landmarks_on_image(rgb_image, detection_result, preview=False):
           landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in pose_landmarks
         ])
         solutions.drawing_utils.draw_landmarks(
-          annotated_image,
+          img,
           pose_landmarks_proto,
           solutions.pose.POSE_CONNECTIONS,
           solutions.drawing_styles.get_default_pose_landmarks_style())
 
-    return annotated_image
+    return img

@@ -1,5 +1,6 @@
 import mediapipe as mp
 from mediapipe.tasks import python
+import numpy as np
 
 import pyvts
 import asyncio
@@ -82,6 +83,7 @@ async def main(settings):
         print('========== START LIVE TRACKING =========')
 
         cap = cv2.VideoCapture(settings['camera_id'])
+
         with PoseLandmarker.create_from_options(options) as landmarker:
 
             # -- LOOP Through Video
@@ -92,22 +94,26 @@ async def main(settings):
                     timestamp += 1
 
                     # Detect pose landmarks from the current frame
-                    image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-                    landmarker.detect_async(image, timestamp)
+                    input_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+                    landmarker.detect_async(input_image, timestamp)
+
+                    # Display Image for tracking window
+                    image = render_image(input_image, settings['preview_enabled'])
 
                     if RESULT:
                         if RESULT.pose_world_landmarks:
                             # Get coordinates
                             parameters = RESULT
+                            # Display pose result
+                            image = draw_landmarks_on_image(image, RESULT)
+                        else:
+                            # Display information when no tracking is available
+                            cv2.putText(image, text="No Human Detected", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(255, 255, 255) , thickness=1)
 
-                            # Display pose result in additional window
-                            annotated_image = draw_landmarks_on_image(image.numpy_view(), RESULT, settings['preview_enabled'])
-                            cv2.imshow(f'VTS FullBody Tracking {VERSION}', annotated_image)
-                            if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
-                                cv2.destroyAllWindows()
-                                running = False
-                                break
+                    # - WINDOW : CAMERA TRACKING
+                    cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
 
+                    # SEND DATA TO VTUBE STUDIO
                     if parameters:
                         # Prepare values to send
                         data = get_bodyparts_values(parameters)
@@ -118,7 +124,31 @@ async def main(settings):
                         # -- Update parameters in VTube Studio
                         send_request_parameter = vts.vts_request.requestSetMultiParameterValue(names, values, weight=1, face_found=True, mode='set')
                         await vts.request(send_request_parameter)
+                else:
+                    # Display error message if there is a camera issue
+                    image = np.zeros((100, 500, 3), dtype=np.uint8)
+                    cv2.putText(image, text="Problem with Camera", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
+                    cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
 
+                # Closing Plugin : Esc or Q
+                if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
+                    cv2.destroyAllWindows()
+                    running = False
+                    break
+
+
+def render_image(image, preview_enabled=False):
+    # -- Display the original input or an empty image as a base
+    image = image.numpy_view()
+    if preview_enabled:
+        # Use the input image as a base if preview configuration is enabled
+        image = np.copy(image)
+    else:
+        # Create an empty image with the same dimensions as the input image
+        height, width, _ = image.shape
+        image = np.zeros((height, width, 3), dtype=np.uint8)
+
+    return image
 
 def get_parameters_names():
     parameters_names = [body_part.name + '_' + angle for body_part in BodyParts for angle in ['X', 'Y', 'Z', 'VISIBILITY']]
