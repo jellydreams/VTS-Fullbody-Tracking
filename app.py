@@ -7,7 +7,7 @@ import asyncio
 import cv2
 import os
 
-from utils_mediapipe import draw_landmarks_on_image, BodyParts, BodyCenters
+from utils_mediapipe import draw_landmarks_on_image, get_parameters_names, get_bodyparts_values
 from ui import window_tracking_configuration
 from info import VERSION
 
@@ -150,74 +150,14 @@ def render_image(image, preview_enabled=False):
 
     return image
 
-def get_parameters_names():
-    parameters_names = [body_part.name + '_' + angle for body_part in BodyParts for angle in ['X', 'Y', 'Z', 'VISIBILITY']]
-    return parameters_names
-
-
-def get_bodyparts_values(parameters):
-    i = 0
-    values = {}
-
-    # Get coordinates from hip as midpoint
-    parameters_world = parameters.pose_world_landmarks[0]
-
-    # Go through each tracked body part
-    for bodypart in BodyParts:
-        # Find center for this part of the body
-        bodypart_center_name = BodyCenters[bodypart.name]
-        bodypart_center = parameters_world[bodypart_center_name.value.value]
-        bodypart_values = parameters_world[bodypart.value]
-        # Calculate values from new center
-        data = calcul_data(bodypart_values, bodypart_center, bodypart.name)
-        values.update(data)
-        i += 1
-
-    # Retrieve coordinates from the image
-    parameters_img = parameters.pose_landmarks[0]
-    # Utilize the right hip to control body position in space using image coordinates
-    values[BodyParts.RIGHT_HIP.name + '_X'] = parameters_img[BodyParts.RIGHT_HIP.value].x
-    values[BodyParts.RIGHT_HIP.name + '_Y'] = parameters_img[BodyParts.RIGHT_HIP.value].y
-    values[BodyParts.RIGHT_HIP.name + '_Z'] = parameters_img[BodyParts.RIGHT_HIP.value].z
-
-    return values
-
-
-def calcul_data(part, center, name):
-    """
-    Calculate body part values
-    :param part: Landmarks, body part to recalculate
-    :param center: Landmarks, body part used as new center
-    :param name: String, name of body part to calculate
-    :return: Dict with new values for each axis
-    """
-
-    x_name = name + '_X'
-    y_name = name + '_Y'
-    z_name = name + '_Z'
-    v_name = name + '_VISIBILITY'
-
-    x = (part.x - center.x) * 10
-    y = (part.y - center.y) * 10
-    z = (part.z - center.z) * 10
-
-    data = {
-        x_name: x,
-        y_name: y,
-        z_name: z,
-        v_name: part.visibility,
-    }
-
-    return data
-
 
 if __name__ == '__main__':
 
     print('=== VTS FULLBODY TRACKING ===')
 
     # --- OPEN USER WINDOW : CONFIGURATION TRACKING
-
     root, settings = window_tracking_configuration()
+
     # ========= START TRACKING ==========
 
     asyncio.run(main(settings))

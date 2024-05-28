@@ -11,15 +11,15 @@ class BodyParts(Enum):
     Enum class defining body parts available in Mediapipe.
     """
 
-    NOSE = 0
+    #NOSE = 0
     # LEFT_EYE_INNER = 1
     # LEFT_EYE = 2
     # LEFT_EYE_OUTER = 3
     # RIGHT_EYE_INNER = 4
     # RIGHT_EYE = 5
     # RIGHT_EYE_OUTER = 6
-    LEFT_EAR = 7
-    RIGHT_EAR = 8
+    # LEFT_EAR = 7
+    # RIGHT_EAR = 8
     # MOUTH_LEFT = 9
     # MOUTH_RIGHT = 10
     LEFT_SHOULDER = 11
@@ -51,20 +51,20 @@ class BodyCenters(Enum):
     Enum class defining the center of body parts.
     """
 
-    NOSE = BodyParts.RIGHT_HIP
+    #NOSE = BodyParts.RIGHT_HIP
     # LEFT_EYE_INNER = BodyParts.LEFT_EYE
     # LEFT_EYE = BodyParts.RIGHT_HIP
     # LEFT_EYE_OUTER = BodyParts.RIGHT_HIP
     # RIGHT_EYE_INNER = BodyParts.RIGHT_HIP
     # RIGHT_EYE = BodyParts.RIGHT_HIP
     # RIGHT_EYE_OUTER = BodyParts.RIGHT_HIP
-    LEFT_EAR = BodyParts.RIGHT_HIP
-    RIGHT_EAR = BodyParts.RIGHT_HIP
+    # LEFT_EAR = BodyParts.RIGHT_HIP
+    # RIGHT_EAR = BodyParts.RIGHT_HIP
     # MOUTH_LEFT = BodyParts.RIGHT_HIP
     # MOUTH_RIGHT = BodyParts.RIGHT_HIP
 
-    LEFT_SHOULDER = BodyParts.LEFT_HIP
-    RIGHT_SHOULDER = BodyParts.RIGHT_HIP
+    LEFT_SHOULDER = BodyParts.RIGHT_SHOULDER
+    RIGHT_SHOULDER = BodyParts.LEFT_SHOULDER
     LEFT_ELBOW = BodyParts.LEFT_SHOULDER
     RIGHT_ELBOW = BodyParts.RIGHT_SHOULDER
     LEFT_WRIST = BodyParts.LEFT_ELBOW
@@ -125,3 +125,92 @@ def draw_landmarks_on_image(img, detection_result):
           solutions.drawing_styles.get_default_pose_landmarks_style())
 
     return img
+
+
+def get_parameters_names():
+    bodyparts_names = [part.name for part in BodyParts]
+    # Remove unused parameter names
+    bodyparts_names.remove('RIGHT_HIP')
+    bodyparts_names.remove('LEFT_HIP')
+    # Add custom names to the list
+    # Note: If a parameter is not created and data is sent, all values will be set to 0
+    bodyparts_names.extend(['HIPS_POSITION', 'HIPS_ROTATION', 'CLAVICLES'])
+    parameters_names = [part + '_' + angle for part in bodyparts_names for angle in ['X', 'Y', 'Z', 'VISIBILITY']]
+
+    return parameters_names
+
+
+def get_bodyparts_values(parameters):
+    """
+    Prepare list of input parameter that will be sent to Vtube Studio
+    :param parameters: landmarks mediapipe
+    """
+    i = 0
+    values = {}
+
+    # Get coordinates from hip as midpoint
+    parameters_world = parameters.pose_world_landmarks[0]
+
+    # Go through each tracked body part
+    for bodypart in BodyParts:
+        # Find center for this part of the body
+        bodypart_center_name = BodyCenters[bodypart.name]
+
+        # Skip right hip as left hip calculates rotation for both
+        if bodypart.name != 'RIGHT_HIP':
+            bodypart_center = parameters_world[bodypart_center_name.value.value]
+            bodypart_values = parameters_world[bodypart.value]
+            bodypart_name = bodypart.name
+            # rename Hips Left to Hips Rotation
+            if bodypart_name == 'LEFT_HIP':
+                bodypart_name = 'HIPS_ROTATION'
+
+            # Calculate values from new center
+            data = calcul_data(bodypart_values, bodypart_center, bodypart_name)
+            values.update(data)
+            i += 1
+
+    # Retrieve coordinates from the image
+    parameters_img = parameters.pose_landmarks[0]
+
+    # Use the right hip to control the position of the hips in space using image coordinates
+    values['HIPS_POSITION_X'] = parameters_img[BodyParts.RIGHT_HIP.value].x
+    values['HIPS_POSITION_Y'] = parameters_img[BodyParts.RIGHT_HIP.value].y
+    values['HIPS_POSITION_Z'] = parameters_img[BodyParts.RIGHT_HIP.value].z
+    values['HIPS_POSITION_VISIBILITY'] = parameters_img[BodyParts.RIGHT_HIP.value].visibility
+
+    # Determine clavicle position using the hip at the center
+    values['CLAVICLES_X'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].x * 10
+    values['CLAVICLES_Y'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].y * 10
+    values['CLAVICLES_Z'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].z * 10
+    values['CLAVICLES_VISIBILITY'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].visibility
+
+    return values
+
+
+def calcul_data(part, center, name):
+    """
+    Calculate body part values
+    :param part: Landmarks, body part to recalculate
+    :param center: Landmarks, body part used as new center
+    :param name: String, name of body part to calculate
+    :return: Dict with new values for each axis
+    """
+
+    x_name = name + '_X'
+    y_name = name + '_Y'
+    z_name = name + '_Z'
+    v_name = name + '_VISIBILITY'
+
+    x = (part.x - center.x) * 10
+    y = (part.y - center.y) * 10
+    z = (part.z - center.z) * 10
+
+    data = {
+        x_name: x,
+        y_name: y,
+        z_name: z,
+        v_name: part.visibility,
+        }
+
+    return data
