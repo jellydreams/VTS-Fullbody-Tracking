@@ -1,7 +1,10 @@
-from tkinter import ttk, Tk, Label, Button, BooleanVar, Checkbutton, Entry, Frame, LEFT, RIGHT
-import cv2
+import tkinter as tk
+from tkinter import ttk
 
-from info import VERSION
+import cv2
+from PIL import Image, ImageTk
+
+from info import VERSION, ICON_PATH
 from pygrabber.dshow_graph import FilterGraph
 
 
@@ -22,8 +25,7 @@ def get_available_cameras():
     available_cameras = []
     names = get_available_cameras_names()
 
-    # Check the first 20 cameras
-    for i in range(0, 20):
+    for i in names:
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
             _, name = cap.read()
@@ -34,67 +36,98 @@ def get_available_cameras():
     return available_cameras
 
 
+def create_section_header(root, text):
+    """ Create section headers with background """
+    frame = tk.Frame(root, bg='#444444')
+    label = tk.Label(frame, text=text, bg='#444444', fg='white', font=('Arial', 10, 'bold'))
+    label.pack(pady=5, padx=10, anchor='w')
+    return frame
+
+
 def window_tracking_configuration():
     """ Window for choosing configuration for tracking """
 
     def get_configuration():
         """ Retrieves configuration values from UI form """
-        camera_name = camera_combobox.get()
+        camera_name = camera_selection.get()
         camera_index = camera_options.index(camera_name)
 
-        port = port_entry.get()
+        port = api_port_entry.get()
 
         settings = {
             'camera_id': available_cameras[camera_index]['id'],
-            'preview_enabled': preview_checkbox_var.get(),
+            'preview_enabled': show_camera_view_var.get(),
             'port': port if port else 8001
         }
 
         return settings
 
-    root = Tk()
+    root = tk.Tk()
     root.title(f"VTS Fullbody Tracking {VERSION} - Settings")
+    root.geometry("340x340")
+    root.configure(bg='#333333')
 
-    title = Label(root, text=f"VTS Fullbody Tracking {VERSION}")
-    title.pack()
+    icon_image = Image.open(ICON_PATH)
+
+    # Set window icon
+    icon_resized_for_window = icon_image.resize((32, 32))
+    window_icon = ImageTk.PhotoImage(icon_resized_for_window)
+    root.iconphoto(False, window_icon)
+
+    # -- Header
+    header_frame = tk.Frame(root, bg='#222222')
+    header_frame.pack(fill=tk.X)
+    # Plugin Icon
+    # Load and resize icon image for window and header
+    icon_photo = icon_image.resize((50, 50))
+    icon_photo = ImageTk.PhotoImage(icon_photo)
+    icon_label = tk.Label(header_frame, image=icon_photo, bg='#222222')
+    icon_label.pack(side=tk.LEFT, padx=10, pady=10)
+    # Plugin name
+    title_label = tk.Label(header_frame, text="VTS Fullbody Tracking", bg='#222222', fg='white', font=('Arial', 12, 'bold'))
+    title_label.pack(padx=10, pady=(15, 2))
+    # version
+    version_label = tk.Label(header_frame, text=f"version {VERSION}", bg='#222222', fg='#bfbfbf', font=('Arial', 8))
+    version_label.pack(padx=10)
 
     available_cameras = get_available_cameras()
 
     if available_cameras:
-        # -- Camera Selection
-        camera_label = Label(root, text="Select Camera:")
-        camera_label.pack()
+        # -- Camera Settings
         camera_options = [info['label'] for info in available_cameras]
-        max_length_label = max(len(option) for option in camera_options)
-        camera_combobox = ttk.Combobox(root, values=camera_options, state="readonly", width=max_length_label)
-        camera_combobox.current(0)  # Sélect first camera by default
-        camera_combobox.pack()
+        camera_settings_frame = create_section_header(root, "Camera Settings")
+        camera_settings_frame.pack(fill=tk.X, pady=(0, 5))
 
-        camera_label = Label(root, text="Tracking Preview Options ")
-        camera_label.pack()
+        # Camera Selection
+        camera_selection = ttk.Combobox(root, values=camera_options, state='readonly', font=('Arial', 10))
+        camera_selection.current(0)
+        camera_selection.pack(pady=(10, 5), padx=20, fill=tk.X)
 
-        # -- Option for showing original input when displaying tracking pose
-        preview_checkbox_var = BooleanVar()
-        preview_checkbox = Checkbutton(root, text="Show Camera View", variable=preview_checkbox_var)
-        preview_checkbox.pack()
+        # Option for showing original input when displaying tracking pose
+        show_camera_view_var = tk.BooleanVar()
+        show_camera_view_checkbox = tk.Checkbutton(root, text="Show Camera View", variable=show_camera_view_var, bg='#333333', fg='white',  activeforeground='white', activebackground="#333333",  selectcolor='black', font=('Arial', 10))
+        show_camera_view_checkbox.pack(anchor='w', padx=20, pady=(0, 10))
 
-        # -- Custom Port Entry
-        port_frame = Frame(root)
-        port_frame.pack(anchor="w", pady=(10, 0))
+        # -- Vtube Studio Settings
+        vtube_studio_frame = create_section_header(root, "Vtube Studio Settings")
+        vtube_studio_frame.pack(fill=tk.X, pady=(0, 5))
 
-        port_label = Label(port_frame, text="API Port:")
-        port_label.pack(side=LEFT)
-
+        # Custom Port Entry
+        api_port_frame = tk.Frame(root, bg='#333333')
+        api_port_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
+        api_port_label = tk.Label(api_port_frame, text="API Port:", bg='#333333', fg='white', font=('Arial', 10))
+        api_port_label.pack(side=tk.LEFT, padx=5)
         vcmd = root.register(validate_port_input)
-        port_entry = Entry(port_frame, validate="key", validatecommand=(vcmd, '%P'), width=10)
-        port_entry.insert(0, "8001")  # Default value
-        port_entry.pack(side=RIGHT)
+        api_port_entry = tk.Entry(api_port_frame, validate="key", validatecommand=(vcmd, '%P'), font=('Arial', 10), width=10)
+        api_port_entry.insert(0, "8001")
+        api_port_entry.pack(side=tk.LEFT, fill=tk.X)
 
-        # -- Submit Configuration
-        start_button = Button(root, text="Start Tracking", command=root.quit)
-        start_button.pack()
+        # -- Start Tracking Button
+        start_tracking_button = tk.Button(root, text="Start Tracking", command=root.quit, font=('Arial', 14, 'bold'), bg='#07121d', fg='white', activebackground='#3c9fbb', activeforeground='white', bd=0)
+        start_tracking_button.pack(pady=(5, 20), padx=20, fill=tk.X)
+
     else:
-        camera_label = Label(root, text="No camera found\n Connect a camera before running the plugin")
+        camera_label = tk.Label(root, text="No camera found\n Connect a camera before running the plugin")
         camera_label.pack()
 
     root.mainloop()
