@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 
 from info import VERSION, ICON_PATH
 from pygrabber.dshow_graph import FilterGraph
+import os
 
 
 def get_available_cameras_names():
@@ -67,7 +68,8 @@ def window_tracking_configuration():
     root.geometry("340x340")
     root.configure(bg='#333333')
 
-    icon_image = Image.open(ICON_PATH)
+    icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
+    icon_image = Image.open(icon_path)
 
     # Set window icon
     icon_resized_for_window = icon_image.resize((32, 32))
