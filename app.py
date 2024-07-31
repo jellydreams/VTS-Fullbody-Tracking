@@ -14,11 +14,13 @@ from info import VERSION
 RESULT = None
 
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'models/pose_landmarker_full.task'))
+icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'icon.png'))
 
 plugin_info = {
     "plugin_name": "VTS_Fullbody_Tracking",
     "developer": "JellyDreams",
-    "authentication_token_path": "./token.txt"
+    "authentication_token_path": "./token.txt",
+    "plugin_icon": icon_path
 }
 
 vts_api = {"version": "1.0", "name": "VTubeStudioPublicAPI", "port": 8001}
