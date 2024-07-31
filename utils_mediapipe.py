@@ -134,7 +134,7 @@ def get_parameters_names():
     bodyparts_names.remove('LEFT_HIP')
     # Add custom names to the list
     # Note: If a parameter is not created and data is sent, all values will be set to 0
-    bodyparts_names.extend(['HIPS_POSITION', 'HIPS_ROTATION', 'CLAVICLES'])
+    bodyparts_names.extend(['HIPS_POSITION', 'BODY', 'HIPS_ROTATION', 'CLAVICLES'])
     parameters_names = [part + '_' + angle for part in bodyparts_names for angle in ['X', 'Y', 'Z', 'VISIBILITY']]
 
     return parameters_names
@@ -173,17 +173,9 @@ def get_bodyparts_values(parameters):
     # Retrieve coordinates from the image
     parameters_img = parameters.pose_landmarks[0]
 
-    # Use the right hip to control the position of the hips in space using image coordinates
-    values['HIPS_POSITION_X'] = parameters_img[BodyParts.RIGHT_HIP.value].x
-    values['HIPS_POSITION_Y'] = parameters_img[BodyParts.RIGHT_HIP.value].y
-    values['HIPS_POSITION_Z'] = parameters_img[BodyParts.RIGHT_HIP.value].z
-    values['HIPS_POSITION_VISIBILITY'] = parameters_img[BodyParts.RIGHT_HIP.value].visibility
-
-    # Determine clavicle position using the hip at the center
-    values['CLAVICLES_X'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].x * 10
-    values['CLAVICLES_Y'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].y * 10
-    values['CLAVICLES_Z'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].z * 10
-    values['CLAVICLES_VISIBILITY'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].visibility
+    values = calcul_body_position(values, parameters_img)
+    values = calcul_hips_position(values, parameters_img)
+    values = calcul_clavicles_position(values, parameters_world)
 
     return values
 
@@ -214,3 +206,39 @@ def calcul_data(part, center, name):
         }
 
     return data
+
+
+def calcul_body_position(values, parameters_img):
+    # Use the middle of hips to control the position of the body in space using image coordinates
+    values['BODY_X'] = (parameters_img[BodyParts.RIGHT_HIP.value].x + parameters_img[BodyParts.LEFT_HIP.value].x) / 2
+    values['BODY_Y'] = (parameters_img[BodyParts.RIGHT_HIP.value].y + parameters_img[BodyParts.LEFT_HIP.value].y) / 2
+    values['BODY_Z'] = (parameters_img[BodyParts.RIGHT_HIP.value].z + parameters_img[BodyParts.LEFT_HIP.value].z) / 2
+
+    values['BODY_VISIBILITY'] = 1.0
+    return values
+
+
+def calcul_hips_position(values, parameters_img):
+    # Use the right hip to control the position of the hips using body position as center
+    body_center_x = (parameters_img[BodyParts.RIGHT_HIP.value].x + parameters_img[BodyParts.LEFT_HIP.value].x + parameters_img[BodyParts.RIGHT_SHOULDER.value].x + parameters_img[BodyParts.LEFT_SHOULDER.value].x + parameters_img[BodyParts.RIGHT_KNEE.value].x + parameters_img[BodyParts.LEFT_KNEE.value].x) / 6
+    body_center_y = (parameters_img[BodyParts.RIGHT_HIP.value].y + parameters_img[BodyParts.LEFT_HIP.value].y + parameters_img[BodyParts.RIGHT_SHOULDER.value].y + parameters_img[BodyParts.LEFT_SHOULDER.value].y + parameters_img[BodyParts.RIGHT_KNEE.value].y + parameters_img[BodyParts.LEFT_KNEE.value].y) / 6
+    body_center_z = (parameters_img[BodyParts.RIGHT_HIP.value].z + parameters_img[BodyParts.LEFT_HIP.value].z + parameters_img[BodyParts.RIGHT_SHOULDER.value].z + parameters_img[BodyParts.LEFT_SHOULDER.value].z + parameters_img[BodyParts.RIGHT_KNEE.value].z + parameters_img[BodyParts.LEFT_KNEE.value].z) / 6
+
+    # middle_hip - center_body
+    values['HIPS_POSITION_X'] = (values['BODY_X'] - body_center_x) * 100
+    values['HIPS_POSITION_Y'] = (values['BODY_Y'] - body_center_y) * 10
+    values['HIPS_POSITION_Z'] = (values['BODY_Z'] - body_center_z) * 10
+
+    values['HIPS_ROTATION_Y'] *= 10
+
+    values['HIPS_POSITION_VISIBILITY'] = 1.0
+    return values
+
+
+def calcul_clavicles_position(values, parameters_world):
+    # Determine clavicle position using the hip at the center
+    values['CLAVICLES_X'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].x * 10
+    values['CLAVICLES_Y'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].y * 10
+    values['CLAVICLES_Z'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].z * 10
+    values['CLAVICLES_VISIBILITY'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].visibility
+    return values
