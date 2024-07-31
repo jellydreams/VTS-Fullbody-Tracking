@@ -1,5 +1,5 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.1.5_
+_Version ALPHA 0.1.6_
 
 This plugin integrates full body tracking functionality using Mediapipe. 
 It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
@@ -45,8 +45,6 @@ Displays the image captured by the camera
 
 📖Wiki Section - [Settings Window](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki/Settings-Window)
 
-
-
 ## Custom Parameters
 TThis plugin add new controls for various body parts in Vtube Studio. \
 Each body part has parameters for controlling its position and visibility.
@@ -88,7 +86,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller --name VTS_Fullbody_Tracking-0.1.5 --add-data='models/*:models' --add-data='icon.png' -F -w .\app.py
+ pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.6 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
 ```
 
 ## Documentation
