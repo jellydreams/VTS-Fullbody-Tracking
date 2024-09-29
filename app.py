@@ -54,7 +54,7 @@ async def main(settings):
     await vts.connect()
 
     # Authenticate with VTube Studio API
-    print('authentification VtubeStudio..')
+    #print('authentification VtubeStudio..')
     await vts.request_authenticate_token()  # get token
     await vts.request_authenticate()  # use token
 
@@ -63,7 +63,7 @@ async def main(settings):
 
     # ---- VTUBE STUDIO: INITIATE CUSTOM PARAMETERS ------
 
-    print('Create parameters in VTube Studio')
+    #print('Create parameters in VTube Studio')
 
     # Prepare parameter names for each body part
     parameter_names = get_parameters_names()
@@ -82,7 +82,7 @@ async def main(settings):
 
     while running:
 
-        print('========== START LIVE TRACKING =========')
+        #print('========== START LIVE TRACKING =========')
 
         cap = cv2.VideoCapture(settings['camera_id'])
 
@@ -122,7 +122,7 @@ async def main(settings):
                         values = list(data.values())
                         names = list(data.keys())
 
-                        print('Update parameters in Vtube Studio')
+                        # print('Update parameters in Vtube Studio')
                         # -- Update parameters in VTube Studio
                         send_request_parameter = vts.vts_request.requestSetMultiParameterValue(names, values, weight=1, face_found=True, mode='set')
                         await vts.request(send_request_parameter)
@@ -155,7 +155,7 @@ def render_image(image, preview_enabled=False):
 
 if __name__ == '__main__':
 
-    print('=== VTS FULLBODY TRACKING ===')
+    #print('=== VTS FULLBODY TRACKING ===')
 
     # --- OPEN USER WINDOW : CONFIGURATION TRACKING
     root, settings = window_tracking_configuration()
@@ -167,5 +167,5 @@ if __name__ == '__main__':
     # ========= STOP PLUGIN ==========
 
     root.destroy()
-    print('=== VTS FULLBODY TRACKING STOPPED ===')
+    #print('=== VTS FULLBODY TRACKING STOPPED ===')
 

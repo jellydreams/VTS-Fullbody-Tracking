@@ -1,15 +1,26 @@
 # VTS FULLBODY TRACKING
-_Version ALPHA 0.1.6_
+
+🔗 website: [vts-fullbody-tracking.gitlab.io](https://vts-fullbody-tracking.gitlab.io/) 
+
+[discord-link]: https://discord.gg/9K9gejWQ3s
+
+[![Last Release][github-release-badge]](https://github.com/jellydreams/VTS-Fullbody-Tracking/releases)
+[![VTS FULLBODY TRACKING Discord][discord-badge]](https://discord.gg/9K9gejWQ3s)
+[![Twitter Follow][twitter-badge]](https://twitter.com/_JellyDreams_)
+
+[discord-badge]: https://img.shields.io/badge/Join_Discord-indigo?logo=discord&logoColor=white&color=7289da
+[twitter-badge]: https://img.shields.io/twitter/follow/_JellyDreams_.svg?style=social
+[github-release-badge]: https://img.shields.io/github/v/release/jellydreams/VTS-Fullbody-Tracking?label=ALPHA%20release
 
 This plugin integrates full body tracking functionality using Mediapipe. 
-It allows users to use tracked body parameters as inputs to control your Live2D model in [VTube Studio](https://denchisoft.com/). 
+It allows users to use tracked body parameters as inputs to control Live2D model in [VTube Studio](https://denchisoft.com/). 
 
 ![Demo Tracking Arms](readme_img/Demo_Tracking_Arms.png)
 
 ## THIS PLUGIN IS UNDER DEVELOPMENT
 This plugin may contain bugs and lack certain features.<br>
-Visit the [Wiki](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki) for more information on how the plugin works <br>
-Join [Discord Server](https://discord.gg/9K9gejWQ3s) for discuss about the plugin.
+Visit the [Wiki](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki) or [Website](https://vts-fullbody-tracking.gitlab.io/) for more information on how the plugin works. <br>
+Join [Discord Server](https://discord.gg/9K9gejWQ3s) to share tests and feedbacks, ask questions or get help.
 
 ### How you can Help
 - **Live2D Rigger**: Help understand how to effectively rig models for the body parts feature
@@ -25,12 +36,11 @@ Join [Discord Server](https://discord.gg/9K9gejWQ3s) for discuss about the plugi
 **Requirements**: Window, VTube Studio, Camera
 
 1. Download the executable from the [releases page](https://github.com/jellydreams/VTS-Fullbody-Tracking/releases)
-2. Connect a Camera and Open VTube Studio
-4. Double-click on the executable file `VTS_Fullbody_Tracking.exe` to launch the plugin
-5. A settings window will appear. Select your camera and click on the 'Start Tracking' button
-6. Allow the plugin in vtube Studio
-7. Window displaying a preview of pose tracking will appear.
-8. In your model's parameter settings, you can now choose body parts X, Y, Z coordinates, and visibility as inputs
+2. **Connect a Camera** and **Open VTube Studio.**
+4. **Double-click on the executable file** `VTS_Fullbody_Tracking.exe` to launch the plugin. A settings window will appear.
+5.  **Select your camera** and **click on the 'Start Tracking' button**
+6. **Allow the plugin in vtube Studio**. Window displaying a preview of pose tracking will appear.
+7. **Configure your model's parameter settings**, using plugin parameters as inputs. you can now choose body parts X, Y, Z coordinates, and visibility as inputs
 
 📖 Wiki Section - [Run the plugin](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki/Run-the-plugin)
 
@@ -46,7 +56,7 @@ Displays the image captured by the camera
 📖Wiki Section - [Settings Window](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki/Settings-Window)
 
 ## Custom Parameters
-TThis plugin add new controls for various body parts in Vtube Studio. \
+This plugin add new controls for various body parts in Vtube Studio. \
 Each body part has parameters for controlling its position and visibility.
 
 ![List Bodyparts MediaPipe](readme_img/list_bodyparts.png)<br/>
@@ -61,11 +71,13 @@ Each body part has parameters for controlling its position and visibility.
 
 ## DEVELOPMENT
 
+Instructions for developers who want to run the plugin from the source code.
+
 ### Requirements
 
 - Python 3.11
 
-Install dependencies
+#### Install dependencies
 
 ```shell
 pip install -r requirements.txt
@@ -86,7 +98,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.6 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
+ pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.7 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
 ```
 
 ## Documentation

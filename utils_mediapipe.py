@@ -156,14 +156,11 @@ def get_bodyparts_values(parameters):
         # Find center for this part of the body
         bodypart_center_name = BodyCenters[bodypart.name]
 
-        # Skip right hip as left hip calculates rotation for both
-        if bodypart.name != 'RIGHT_HIP':
+        # Skip hips as orignal values are used
+        if bodypart.name not in ['RIGHT_HIP', 'LEFT_HIP']:
             bodypart_center = parameters_world[bodypart_center_name.value.value]
             bodypart_values = parameters_world[bodypart.value]
             bodypart_name = bodypart.name
-            # rename Hips Left to Hips Rotation
-            if bodypart_name == 'LEFT_HIP':
-                bodypart_name = 'HIPS_ROTATION'
 
             # Calculate values from new center
             data = calcul_data(bodypart_values, bodypart_center, bodypart_name)
@@ -176,6 +173,7 @@ def get_bodyparts_values(parameters):
     values = calcul_body_position(values, parameters_img)
     values = calcul_hips_position(values, parameters_img)
     values = calcul_clavicles_position(values, parameters_world)
+    values = calcul_hips_rotation(values, parameters_world)
 
     return values
 
@@ -229,9 +227,14 @@ def calcul_hips_position(values, parameters_img):
     values['HIPS_POSITION_Y'] = (values['BODY_Y'] - body_center_y) * 10
     values['HIPS_POSITION_Z'] = (values['BODY_Z'] - body_center_z) * 10
 
-    values['HIPS_ROTATION_Y'] *= 10
-
     values['HIPS_POSITION_VISIBILITY'] = 1.0
+    return values
+
+
+def calcul_hips_rotation(values, parameters_world):
+    values['HIPS_ROTATION_X'] = parameters_world[BodyParts.LEFT_HIP.value].x * 100
+    values['HIPS_ROTATION_Y'] = parameters_world[BodyParts.LEFT_HIP.value].y * 100
+    values['HIPS_ROTATION_Z'] = parameters_world[BodyParts.LEFT_HIP.value].z * 100
     return values
 
 
