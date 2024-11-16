@@ -5,17 +5,43 @@ import cv2
 from PIL import Image, ImageTk
 
 from info import VERSION, ICON_PATH
-from pygrabber.dshow_graph import FilterGraph
 import os
+
+import platform
+import subprocess
 
 
 def get_available_cameras_names():
-    """Retrieve system names for cameras"""
-    devices = FilterGraph().get_input_devices()
     available_cameras = {}
 
-    for device_index, device_name in enumerate(devices):
-        available_cameras[device_index] = device_name
+    if platform.system() == "Windows":
+        from pygrabber.dshow_graph import FilterGraph
+        devices = FilterGraph().get_input_devices()
+
+        for device_index, device_name in enumerate(devices):
+            available_cameras[device_index] = device_name
+    else:
+        # Retrieve camera names using system_profiler on macOS
+        try:
+            # Execute the command to get video devices
+            result = subprocess.run(
+                ["system_profiler", "SPCameraDataType"],
+                stdout=subprocess.PIPE,
+                text=True
+            )
+            output = result.stdout
+
+            # Search for camera names in the output
+            lines = output.split("\n")
+            camera_index = 0
+            for line in lines:
+                if "Model ID:" in line or "Camera Model ID:" in line:  # Check for the model name
+                    camera_name = line.split(":")[1].strip()
+                    available_cameras[camera_index] = camera_name
+                    camera_index += 1
+
+        except Exception as e:
+            print(f"Error while retrieving cameras: {e}")
 
     return available_cameras
 
