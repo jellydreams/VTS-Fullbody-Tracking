@@ -14,7 +14,7 @@ import subprocess
 def get_available_cameras_names():
     available_cameras = {}
 
-    if platform.system() == "Windows":
+    if (platform.system() == "Windows") and not ("WINEPREFIX" in os.environ):
         from pygrabber.dshow_graph import FilterGraph
         devices = FilterGraph().get_input_devices()
 

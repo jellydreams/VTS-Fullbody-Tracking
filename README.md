@@ -98,7 +98,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.7 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
+ pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.7-mac --add-data='models/*:models' --add-data='icon.png:.' -F -w 
 ```
 
 ## Documentation
