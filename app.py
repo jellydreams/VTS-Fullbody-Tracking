@@ -80,11 +80,20 @@ async def main(settings):
     timestamp = 0
     running = True
 
+    camera_setting = settings['camera_id'] if not settings['camera_ip'] else get_stream_url(settings['camera_ip'], settings['camera_port'])
     while running:
-
         #print('========== START LIVE TRACKING =========')
+        cap = cv2.VideoCapture(camera_setting)
 
-        cap = cv2.VideoCapture(settings['camera_id'])
+        if not cap.isOpened():
+            input_image = np.zeros((200, 800, 3), dtype=np.uint8)
+            cv2.putText(input_image, text=f"Failed to connect to the camera at URL: {camera_setting}", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(255, 255, 255), thickness=1)
+            cv2.imshow(f'VTS FullBody Tracking {VERSION}', input_image)
+
+            if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
+                cv2.destroyAllWindows()
+                running = False
+                break
 
         with PoseLandmarker.create_from_options(options) as landmarker:
 
@@ -151,6 +160,10 @@ def render_image(image, preview_enabled=False):
         image = np.zeros((height, width, 3), dtype=np.uint8)
 
     return image
+
+
+def get_stream_url(ip, port):
+    return f"http://{ip}:{port}/"
 
 
 if __name__ == '__main__':

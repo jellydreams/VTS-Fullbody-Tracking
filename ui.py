@@ -79,19 +79,23 @@ def window_tracking_configuration():
         camera_name = camera_selection.get()
         camera_index = camera_options.index(camera_name)
 
-        port = api_port_entry.get()
+        api_port = api_port_entry.get()
+        camera_port = camera_port_entry.get()
+        camera_ip = camera_ip_entry.get()
 
         settings = {
             'camera_id': available_cameras[camera_index]['id'],
+            'camera_ip': camera_ip,
+            'camera_port': camera_port,
             'preview_enabled': show_camera_view_var.get(),
-            'port': port if port else 8001
+            'port': api_port if api_port else 8001
         }
 
         return settings
 
     root = tk.Tk()
     root.title(f"VTS Fullbody Tracking {VERSION} - Settings")
-    root.geometry("340x340")
+    root.geometry("340x380")
     root.configure(bg='#333333')
 
     icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
@@ -130,6 +134,21 @@ def window_tracking_configuration():
         camera_selection = ttk.Combobox(root, values=camera_options, state='readonly', font=('Arial', 10))
         camera_selection.current(0)
         camera_selection.pack(pady=(10, 5), padx=20, fill=tk.X)
+
+        # Camera external connection
+        camera_url_frame = tk.Frame(root, bg='#333333')
+        camera_url_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
+        camera_ip_label = tk.Label(camera_url_frame, text="http://", bg='#333333', fg='white', font=('Arial', 10))
+        camera_ip_label.pack(side=tk.LEFT, padx=5)
+        camera_ip_entry = tk.Entry(camera_url_frame, validate="key", font=('Arial', 10), width=20)
+        camera_ip_entry.pack(side=tk.LEFT, fill=tk.X)
+
+        camera_url_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
+        camera_port_label = tk.Label(camera_url_frame, text=":", bg='#333333', fg='white', font=('Arial', 10))
+        camera_port_label.pack(side=tk.LEFT, padx=5)
+        vcmd = root.register(validate_port_input)
+        camera_port_entry = tk.Entry(camera_url_frame, validate="key", validatecommand=(vcmd, '%P'), font=('Arial', 10), width=10)
+        camera_port_entry.pack(side=tk.LEFT, fill=tk.X)
 
         # Option for showing original input when displaying tracking pose
         show_camera_view_var = tk.BooleanVar()
