@@ -78,12 +78,10 @@ def window_tracking_configuration():
         """ Retrieves configuration values from UI form """
 
         api_port = api_port_entry.get()
-        camera_port = camera_port_entry.get()
-        camera_ip = camera_ip_entry.get()
+        camera_url = camera_url_entry.get()
 
         settings = {
-            'camera_ip': camera_ip,
-            'camera_port': camera_port,
+            'camera_url': camera_url,
             'preview_enabled': show_camera_view_var.get(),
             'port': api_port if api_port else 8001
         }
@@ -143,17 +141,10 @@ def window_tracking_configuration():
     # Camera external connection
     camera_url_frame = tk.Frame(root, bg='#333333')
     camera_url_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
-    camera_ip_label = tk.Label(camera_url_frame, text="http://", bg='#333333', fg='white', font=('Arial', 10))
-    camera_ip_label.pack(side=tk.LEFT, padx=5)
-    camera_ip_entry = tk.Entry(camera_url_frame, validate="key", font=('Arial', 10), width=20)
-    camera_ip_entry.pack(side=tk.LEFT, fill=tk.X)
-
-    camera_url_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
-    camera_port_label = tk.Label(camera_url_frame, text=":", bg='#333333', fg='white', font=('Arial', 10))
-    camera_port_label.pack(side=tk.LEFT, padx=5)
-    vcmd = root.register(validate_port_input)
-    camera_port_entry = tk.Entry(camera_url_frame, validate="key", validatecommand=(vcmd, '%P'), font=('Arial', 10), width=10)
-    camera_port_entry.pack(side=tk.LEFT, fill=tk.X)
+    camera_url_label = tk.Label(camera_url_frame, text="Camera url", bg='#333333', fg='white', font=('Arial', 10))
+    camera_url_label.pack(side=tk.LEFT, padx=5)
+    camera_url_entry = tk.Entry(camera_url_frame, validate="key", font=('Arial', 10), width=30)
+    camera_url_entry.pack(side=tk.LEFT, fill=tk.X)
 
     # Option for showing original input when displaying tracking pose
     show_camera_view_var = tk.BooleanVar()

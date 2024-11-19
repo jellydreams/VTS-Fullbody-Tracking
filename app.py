@@ -80,7 +80,7 @@ async def main(settings):
     timestamp = 0
     running = True
 
-    camera_setting = settings['camera_id'] if not settings['camera_ip'] else get_stream_url(settings['camera_ip'], settings['camera_port'])
+    camera_setting = settings['camera_id'] if not settings['camera_url'] else settings['camera_url']
     while running:
         #print('========== START LIVE TRACKING =========')
         cap = cv2.VideoCapture(camera_setting)
