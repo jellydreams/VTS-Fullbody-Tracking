@@ -36,65 +36,75 @@ async def main(settings):
 
     vts_api['port'] = settings['port']
     vts = pyvts.vts(plugin_info=plugin_info, vts_api_info=vts_api)
-    await connection_vts(vts)
-    await create_parameters_vts(vts)
 
-    # ---- LIVE TRACKING ----------------
+    error = False
+    try:
+        await connection_vts(vts)
+    except ConnectionError:
+        error_connection_vts()
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        error = True
 
-    parameters = None
-    timestamp = 0
+    if not error:
+        await create_parameters_vts(vts)
 
-    cap = cv2.VideoCapture(settings['camera_id'])
+        # ---- LIVE TRACKING ----------------
 
-    #print('========== START LIVE TRACKING =========')
-    with PoseLandmarker.create_from_options(options) as landmarker:
-        # -- LOOP Through Video
-        while cap.isOpened():
-            ret, frame = cap.read()
+        parameters = None
+        timestamp = 0
 
-            if ret:
-                timestamp += 1
-                # Detect pose landmarks from the current frame
-                input_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-                RESULT = landmarker.detect(input_image)
+        cap = cv2.VideoCapture(settings['camera_id'])
 
-                # Display Image for tracking window
-                image = render_image(input_image, settings['preview_enabled'])
-                if RESULT:
-                    if RESULT.pose_world_landmarks:
-                        # Get coordinates
-                        parameters = RESULT
-                        image = draw_landmarks_on_image(image, RESULT)
-                    else:
-                        error_pose_estimation(image)
+        #print('========== START LIVE TRACKING =========')
+        with PoseLandmarker.create_from_options(options) as landmarker:
+            # -- LOOP Through Video
+            while cap.isOpened():
+                ret, frame = cap.read()
 
-                # - WINDOW : CAMERA TRACKING
-                cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
+                if ret:
+                    timestamp += 1
+                    # Detect pose landmarks from the current frame
+                    input_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+                    RESULT = landmarker.detect(input_image)
 
-                # SEND DATA TO VTUBE STUDIO
-                if parameters:
-                    # Prepare values to send
-                    data = get_bodyparts_values(parameters)
-                    names, values = zip(*data.items())
-                    await send_paramters_vts(vts, values, names)
+                    # Display Image for tracking window
+                    image = render_image(input_image, settings['preview_enabled'])
+                    if RESULT:
+                        if RESULT.pose_world_landmarks:
+                            # Get coordinates
+                            parameters = RESULT
+                            image = draw_landmarks_on_image(image, RESULT)
+                        else:
+                            error_pose_estimation(image)
 
-            else:
-                error_camera()
+                    # - WINDOW : CAMERA TRACKING
+                    cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
 
-            # print('-----------------------------------------')
-            # Closing Plugin : Esc or Q
-            if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
-                cv2.destroyAllWindows()
-                break
+                    # SEND DATA TO VTUBE STUDIO
+                    if parameters:
+                        # Prepare values to send
+                        data = get_bodyparts_values(parameters)
+                        names, values = zip(*data.items())
+                        await send_paramters_vts(vts, values, names)
+
+                else:
+                    error_camera()
+
+                # print('-----------------------------------------')
+                # Closing Plugin : Esc or Q
+                if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
+                    cv2.destroyAllWindows()
+                    break
 
 
 def error_connection_vts():
-    # Display error message if there is a camera issue
-    image = np.zeros((100, 500, 3), dtype=np.uint8)
-    cv2.putText(image, text="Error Connection VTube Studio", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
-    cv2.putText(image, text="VTube Studio is Open", org=(50, 75), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
-    cv2.putText(image, text="Api Plugin is toggled on", org=(50, 100), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
-    cv2.putText(image, text="Port API should be the same", org=(50, 125), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
+    """Display error message if there is a camera issue"""
+    image = np.zeros((180, 600, 3), dtype=np.uint8)
+    cv2.putText(image, text="Error: Unable to connect to VTube Studio", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
+    cv2.putText(image, text="- Ensure VTube Studio is running", org=(50, 75), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.4, color=(255, 255, 255), thickness=1)
+    cv2.putText(image, text='- Enable "Start API (Allow Plugin)" in VTube Studio settings', org=(50, 100), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.4, color=(255, 255, 255), thickness=1)
+    cv2.putText(image, text="- Verify that the API Port matches in the plugin and VTube Studio", org=(50, 125), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.4, color=(255, 255, 255), thickness=1)
     cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
 
 
