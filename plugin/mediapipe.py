@@ -1,9 +1,8 @@
 from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
-import numpy as np
-
+import mediapipe as mp
+from mediapipe.tasks import python
 from enum import Enum
-import cv2
 
 
 class BodyParts(Enum):
@@ -93,6 +92,19 @@ def get_part_from_name(i):
         if part.value == i:
             return part
     raise None
+
+
+def init_mediapipe_options(model_path):
+    # Create a PoseLandmarker object
+    BaseOptions = mp.tasks.BaseOptions
+    PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
+    VisionRunningMode = mp.tasks.vision.RunningMode
+
+    options = PoseLandmarkerOptions(
+       base_options=BaseOptions(model_asset_path=model_path),
+       running_mode=VisionRunningMode.IMAGE)
+
+    return options
 
 
 def draw_landmarks_on_image(img, detection_result):

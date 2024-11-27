@@ -69,7 +69,7 @@ def window_tracking_configuration():
     root.configure(bg='#333333')
 
     icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
-    icon_image = Image.open(icon_path)
+    icon_image = Image.open(icon_path.replace("plugin\\", ""))
 
     # Set window icon
     icon_resized_for_window = icon_image.resize((32, 32))
