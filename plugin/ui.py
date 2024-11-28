@@ -5,17 +5,43 @@ import cv2
 from PIL import Image, ImageTk
 
 from info import VERSION, ICON_PATH
-from pygrabber.dshow_graph import FilterGraph
 import os
+
+import platform
+import subprocess
 
 
 def get_available_cameras_names():
-    """Retrieve system names for cameras"""
-    devices = FilterGraph().get_input_devices()
     available_cameras = {}
 
-    for device_index, device_name in enumerate(devices):
-        available_cameras[device_index] = device_name
+    if (platform.system() == "Windows") and not ("WINEPREFIX" in os.environ):
+        from pygrabber.dshow_graph import FilterGraph
+        devices = FilterGraph().get_input_devices()
+
+        for device_index, device_name in enumerate(devices):
+            available_cameras[device_index] = device_name
+    else:
+        # Retrieve camera names using system_profiler on macOS
+        try:
+            # Execute the command to get video devices
+            result = subprocess.run(
+                ["system_profiler", "SPCameraDataType"],
+                stdout=subprocess.PIPE,
+                text=True
+            )
+            output = result.stdout
+
+            # Search for camera names in the output
+            lines = output.split("\n")
+            camera_index = 0
+            for line in lines:
+                if "Model ID:" in line or "Camera Model ID:" in line:  # Check for the model name
+                    camera_name = line.split(":")[1].strip()
+                    available_cameras[camera_index] = camera_name
+                    camera_index += 1
+
+        except Exception as e:
+            print(f"Error while retrieving cameras: {e}")
 
     return available_cameras
 
@@ -50,22 +76,26 @@ def window_tracking_configuration():
 
     def get_configuration():
         """ Retrieves configuration values from UI form """
-        camera_name = camera_selection.get()
-        camera_index = camera_options.index(camera_name)
 
-        port = api_port_entry.get()
+        api_port = api_port_entry.get()
+        camera_url = camera_url_entry.get()
 
         settings = {
-            'camera_id': available_cameras[camera_index]['id'],
+            'camera_url': camera_url,
             'preview_enabled': show_camera_view_var.get(),
-            'port': port if port else 8001
+            'port': api_port if api_port else 8001
         }
+
+        if available_cameras:
+            camera_name = camera_selection.get()
+            camera_index = camera_options.index(camera_name)
+            settings['camera_id'] = available_cameras[camera_index]['id']
 
         return settings
 
     root = tk.Tk()
     root.title(f"VTS Fullbody Tracking {VERSION} - Settings")
-    root.geometry("340x340")
+    root.geometry("340x380")
     root.configure(bg='#333333')
 
     icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
@@ -104,33 +134,40 @@ def window_tracking_configuration():
         camera_selection = ttk.Combobox(root, values=camera_options, state='readonly', font=('Arial', 10))
         camera_selection.current(0)
         camera_selection.pack(pady=(10, 5), padx=20, fill=tk.X)
-
-        # Option for showing original input when displaying tracking pose
-        show_camera_view_var = tk.BooleanVar()
-        show_camera_view_checkbox = tk.Checkbutton(root, text="Show Camera View", variable=show_camera_view_var, bg='#333333', fg='white',  activeforeground='white', activebackground="#333333",  selectcolor='black', font=('Arial', 10))
-        show_camera_view_checkbox.pack(anchor='w', padx=20, pady=(0, 10))
-
-        # -- Vtube Studio Settings
-        vtube_studio_frame = create_section_header(root, "Vtube Studio Settings")
-        vtube_studio_frame.pack(fill=tk.X, pady=(0, 5))
-
-        # Custom Port Entry
-        api_port_frame = tk.Frame(root, bg='#333333')
-        api_port_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
-        api_port_label = tk.Label(api_port_frame, text="API Port:", bg='#333333', fg='white', font=('Arial', 10))
-        api_port_label.pack(side=tk.LEFT, padx=5)
-        vcmd = root.register(validate_port_input)
-        api_port_entry = tk.Entry(api_port_frame, validate="key", validatecommand=(vcmd, '%P'), font=('Arial', 10), width=10)
-        api_port_entry.insert(0, "8001")
-        api_port_entry.pack(side=tk.LEFT, fill=tk.X)
-
-        # -- Start Tracking Button
-        start_tracking_button = tk.Button(root, text="Start Tracking", command=root.quit, font=('Arial', 14, 'bold'), bg='#07121d', fg='white', activebackground='#3c9fbb', activeforeground='white', bd=0)
-        start_tracking_button.pack(pady=(5, 20), padx=20, fill=tk.X)
-
     else:
         camera_label = tk.Label(root, text="No camera found\n Connect a camera before running the plugin")
         camera_label.pack()
+
+    # Camera external connection
+    camera_url_frame = tk.Frame(root, bg='#333333')
+    camera_url_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
+    camera_url_label = tk.Label(camera_url_frame, text="Camera url", bg='#333333', fg='white', font=('Arial', 10))
+    camera_url_label.pack(side=tk.LEFT, padx=5)
+    camera_url_entry = tk.Entry(camera_url_frame, validate="key", font=('Arial', 10), width=30)
+    camera_url_entry.pack(side=tk.LEFT, fill=tk.X)
+
+    # Option for showing original input when displaying tracking pose
+    show_camera_view_var = tk.BooleanVar()
+    show_camera_view_checkbox = tk.Checkbutton(root, text="Show Camera View", variable=show_camera_view_var, bg='#333333', fg='white',  activeforeground='white', activebackground="#333333",  selectcolor='black', font=('Arial', 10))
+    show_camera_view_checkbox.pack(anchor='w', padx=20, pady=(0, 10))
+
+    # -- Vtube Studio Settings
+    vtube_studio_frame = create_section_header(root, "Vtube Studio Settings")
+    vtube_studio_frame.pack(fill=tk.X, pady=(0, 5))
+
+    # Custom Port Entry
+    api_port_frame = tk.Frame(root, bg='#333333')
+    api_port_frame.pack(pady=(10, 20), padx=20, fill=tk.X)
+    api_port_label = tk.Label(api_port_frame, text="API Port:", bg='#333333', fg='white', font=('Arial', 10))
+    api_port_label.pack(side=tk.LEFT, padx=5)
+    vcmd = root.register(validate_port_input)
+    api_port_entry = tk.Entry(api_port_frame, validate="key", validatecommand=(vcmd, '%P'), font=('Arial', 10), width=10)
+    api_port_entry.insert(0, "8001")
+    api_port_entry.pack(side=tk.LEFT, fill=tk.X)
+
+    # -- Start Tracking Button
+    start_tracking_button = tk.Button(root, text="Start Tracking", command=root.quit, font=('Arial', 14, 'bold'), bg='#07121d', fg='white', activebackground='#3c9fbb', activeforeground='white', bd=0)
+    start_tracking_button.pack(pady=(5, 20), padx=20, fill=tk.X)
 
     root.mainloop()
 

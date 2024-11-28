@@ -69,6 +69,8 @@ Each body part has parameters for controlling its position and visibility.
 
 📖Wiki Section - [List of Parameters](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki/Custom-Parameters)
 
+___
+
 ## DEVELOPMENT
 
 Instructions for developers who want to run the plugin from the source code.
@@ -98,7 +100,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.7 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
+ pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.8 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
 ```
 
 ## Documentation

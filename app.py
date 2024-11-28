@@ -54,7 +54,13 @@ async def main(settings):
         parameters = None
         timestamp = 0
 
-        cap = cv2.VideoCapture(settings['camera_id'])
+        # -- Camera connection
+        camera_setting = settings['camera_id'] if not settings['camera_url'] else settings['camera_url']
+        cap = cv2.VideoCapture(camera_setting)
+        if not cap.isOpened():
+            error_camera_url(camera_setting)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
         #print('========== START LIVE TRACKING =========')
         with PoseLandmarker.create_from_options(options) as landmarker:
@@ -87,9 +93,11 @@ async def main(settings):
                         data = get_bodyparts_values(parameters)
                         names, values = zip(*data.items())
                         await send_paramters_vts(vts, values, names)
-
                 else:
-                    error_camera()
+                    if settings['camera_url']:
+                        error_camera_url(camera_setting)
+                    else:
+                        error_camera()
 
                 # print('-----------------------------------------')
                 # Closing Plugin : Esc or Q
@@ -118,6 +126,12 @@ def error_camera():
     image = np.zeros((100, 500, 3), dtype=np.uint8)
     cv2.putText(image, text="Problem with Camera", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.6, color=(255, 255, 255), thickness=1)
     cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
+
+
+def error_camera_url(camera_setting):
+    input_image = np.zeros((200, 800, 3), dtype=np.uint8)
+    cv2.putText(input_image, text=f"Failed to connect to the camera at URL: {camera_setting}", org=(50, 50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, color=(255, 255, 255), thickness=1)
+    cv2.imshow(f'VTS FullBody Tracking {VERSION}', input_image)
 
 
 def render_image(image, preview_enabled=False):
