@@ -7,10 +7,11 @@ import cv2
 import os
 
 from info import VERSION
-from plugin.ui import window_tracking_configuration
+from plugin.ui import window_tracking_configuration, NIZIMA_LIVE, VTUBE_STUDIO
 from plugin.mediapipe import draw_landmarks_on_image, get_bodyparts_values, init_mediapipe_options
 from plugin.vtube_studio import connection_vts, create_parameters_vts, send_paramters_vts
 
+from plugin.nizima import Nizima
 
 RESULT = None
 
@@ -32,25 +33,43 @@ async def main(settings):
     options = init_mediapipe_options(model_path)
     PoseLandmarker = mp.tasks.vision.PoseLandmarker
 
+    connection = False
+    software = settings['software']
+    port = settings['port']
+
+    # ----- NIZIMA -------------
+    if software == NIZIMA_LIVE:
+        plugin_infos = {
+            "Name": 'Fullbody Tracking',
+            "Developer": 'Jelly Dreams'
+        }
+        nz = Nizima(plugin_infos=plugin_infos, port=port)
+        await nz.connect_nizima()
+
+        if nz.connection:
+            connection = True
+            await nz.create_parameters()
+
     # ----- VTUBE STUDIO -------------
+    elif software == VTUBE_STUDIO:
+        vts_api['port'] = port
+        vts = pyvts.vts(plugin_info=plugin_info, vts_api_info=vts_api)
 
-    vts_api['port'] = settings['port']
-    vts = pyvts.vts(plugin_info=plugin_info, vts_api_info=vts_api)
+        error = False
+        try:
+            await connection_vts(vts)
+        except ConnectionError:
+            error_connection_vts()
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            error = True
 
-    error = False
-    try:
-        await connection_vts(vts)
-    except ConnectionError:
-        error_connection_vts()
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        error = True
+        if not error:
+            connection = True
+            await create_parameters_vts(vts)
 
-    if not error:
-        await create_parameters_vts(vts)
-
-        # ---- LIVE TRACKING ----------------
-
+    # ---- LIVE TRACKING ----------------
+    if connection:
         parameters = None
         timestamp = 0
 
@@ -89,10 +108,15 @@ async def main(settings):
 
                     # SEND DATA TO VTUBE STUDIO
                     if parameters:
-                        # Prepare values to send
                         data = get_bodyparts_values(parameters)
-                        names, values = zip(*data.items())
-                        await send_paramters_vts(vts, values, names)
+
+                        if software == NIZIMA_LIVE:
+                            data = [{"Id": key, "Value": value*10} for key, value in data.items()]
+                            await nz.set_live_parameter_values(data)
+                        elif software == VTUBE_STUDIO:
+                            # Prepare values to send
+                            names, values = zip(*data.items())
+                            await send_paramters_vts(vts, values, names)
                 else:
                     if settings['camera_url']:
                         error_camera_url(camera_setting)
@@ -104,6 +128,11 @@ async def main(settings):
                 if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
                     cv2.destroyAllWindows()
                     break
+    else:
+        print('connection error')
+        error_connection_vts()
+        if cv2.waitKey(1) & 0xFF in [ord('q'), 27]:
+            cv2.destroyAllWindows()
 
 
 def error_connection_vts():

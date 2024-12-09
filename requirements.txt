@@ -4,3 +4,4 @@ opencv-python
 numpy
 pyinstaller
 pygrabber
+pynizima
