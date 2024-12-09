@@ -1,8 +1,5 @@
 from .mediapipe import get_parameters_names
 
-from debug import start_timer, stop_timer
-
-
 async def connection_vts(vts):
     # Initialize VTube Studio connection
     await vts.connect()
@@ -17,8 +14,6 @@ async def connection_vts(vts):
 
 
 async def create_parameters_vts(vts):
-    start_time = start_timer()
-
     # print('Create parameters in VTube Studio')
 
     # Prepare parameter names for each body part
@@ -29,9 +24,6 @@ async def create_parameters_vts(vts):
         # Add custom parameters in VTube Studio
         send_request_new_parameter = vts.vts_request.requestCustomParameter(parameter_name, min=-10, max=10)
         await vts.request(send_request_new_parameter)
-
-    stop_timer(start_time, 'create parameters in vts')
-
 
 async def send_paramters_vts(vts, values, names):
     """  parameters in VTube Studio """
