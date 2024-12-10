@@ -21,13 +21,8 @@ WINDOW_SIZE = "340x440"
 NIZIMA_LIVE = 'NizimaLIVE'
 VTUBE_STUDIO = 'VTube Studio'
 
-
 ICON_NIZIMA = 'icon_nizimalive.png'
 ICON_VTUBE_STUDIO = 'icon_vtubestudio.png'
-
-icon_nizima = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_NIZIMA))
-icon_nizima = Image.open(icon_nizima.replace("plugin\\", ""))
-
 
 
 def window_tracking_configuration():

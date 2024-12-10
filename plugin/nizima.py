@@ -5,7 +5,6 @@ from pynizima import NizimaRequest
 from pynizima.errors import InvalidToken
 from info import VERSION, ICON_PATH
 
-
 class Nizima(NizimaRequest):
 
     def __init__(self, plugin_infos, token_path='token-fullbodytracking.txt', **kwargs):
@@ -42,7 +41,8 @@ class Nizima(NizimaRequest):
         return enabled
 
     async def register_plugin(self, **kwargs):
-        self.token = await super().register_plugin(name=self.plugin_name, developer=self.plugin_infos['Developer'], version=VERSION, icon=ICON_PATH)
+        icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH)).replace("plugin\\", "")
+        self.token = await super().register_plugin(name=self.plugin_name, developer=self.plugin_infos['Developer'], version=VERSION, icon=icon_path)
         self.save_token(self.token)
         return self.token
 
@@ -56,7 +56,7 @@ class Nizima(NizimaRequest):
         for parameter_name in parameter_names:
             parameter = {
                 "Id": parameter_name,
-                "Group": parameter_name.split('_')[1],
+                "Group": self.group_name(parameter_name),
                 "Base": 0,
                 "Max": 10,
                 "Min": -10,
@@ -87,5 +87,13 @@ class Nizima(NizimaRequest):
             print(f"File not found: {self.token_path}")
             return None
 
+    def group_name(self, input_name):
+        group = input_name
+        group.replace('RIGHT', 'R')
+        group.replace('LEFT', 'L')
+        group = group.split('_')
+        group.remove(group[-1])  # remove axis info
+        group_name = ' '.join([text.capitalize() for text in group])
+        return group_name
 
 
