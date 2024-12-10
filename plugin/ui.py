@@ -22,6 +22,14 @@ NIZIMA_LIVE = 'NizimaLIVE'
 VTUBE_STUDIO = 'VTube Studio'
 
 
+ICON_NIZIMA = 'icon_nizimalive.png'
+ICON_VTUBE_STUDIO = 'icon_vtubestudio.png'
+
+icon_nizima = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_NIZIMA))
+icon_nizima = Image.open(icon_nizima.replace("plugin\\", ""))
+
+
+
 def window_tracking_configuration():
     """ Window for choosing configuration for tracking """
 
@@ -140,12 +148,14 @@ def window_tracking_configuration():
     style.configure('TButton', bg='skyblue', fg='white')
 
     # Chargement des icônes
-    image = Image.open("icon_vtubestudio.png")
+    image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_VTUBE_STUDIO))
+    image = Image.open(image.replace("plugin\\", ""))
     image_resized = image.resize((25, 25))
     vtube_icon = ImageTk.PhotoImage(image_resized)
     # Charger l'image avec Pillow
 
-    image = Image.open("icon_nizima.png")
+    image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_NIZIMA))
+    image = Image.open(image.replace("plugin\\", ""))
     image_resized = image.resize((25, 25))
     nizima_icon = ImageTk.PhotoImage(image_resized)  # Remplacez avec le chemin correct
 

@@ -26,15 +26,10 @@ python app.py
 
 ### Build executable
 
+```shell
+ pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.9 --add-data='models/*:models' --add-data='*.png:.' -F -w 
+```
 
-#### VTube Studio
-```shell
- pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.9 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
-```
-#### Nizima
-```shell
- pyinstaller ./app.py -n Nizima_Fullbody_Tracking-0.1.9 --add-data='models/*:models' --add-data='icon.png:.' -F -w 
-```
 
 ## Documentation
 
