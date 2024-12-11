@@ -4,6 +4,8 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from enum import Enum
 
+LIVE_STREAM = 'LIVE_STREAM'
+IMAGE = 'IMAGE'
 
 class BodyParts(Enum):
     """
@@ -94,49 +96,71 @@ def get_part_from_name(i):
     raise None
 
 
-def init_mediapipe_options(model_path):
-    # Create a PoseLandmarker object
-    BaseOptions = mp.tasks.BaseOptions
-    PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
-    VisionRunningMode = mp.tasks.vision.RunningMode
+class MediapipeTracking:
+    def __init__(self, mode=LIVE_STREAM):
+        self.result = None
+        self.options = None
+        self.mode = mode
 
-    options = PoseLandmarkerOptions(
-       base_options=BaseOptions(model_asset_path=model_path),
-       running_mode=VisionRunningMode.IMAGE)
+    def init_mediapipe_options(self, model_path):
+        # Create a PoseLandmarker object
+        BaseOptions = mp.tasks.BaseOptions
+        PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
+        VisionRunningMode = mp.tasks.vision.RunningMode
 
-    return options
+        if self.mode == LIVE_STREAM:
+            PoseLandmarkerResult = mp.tasks.vision.PoseLandmarkerResult
 
+            def get_result(result: PoseLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
+                print('pose landmarker result: {}'.format(result))
+                self.result = result
 
-def draw_landmarks_on_image(img, detection_result):
-    """
-    Draw landmarks on the input image.
+            self.options = PoseLandmarkerOptions(
+               base_options=BaseOptions(model_asset_path=model_path),
+               running_mode=VisionRunningMode.LIVE_STREAM,
+               result_callback=get_result  # LIVE_STREAM
+            )
+        else:
+            self.options = PoseLandmarkerOptions(
+                base_options=BaseOptions(model_asset_path=model_path),
+                running_mode=VisionRunningMode.IMAGE,
+            )
+        return self.options
 
-    :param rgb_image: input image
-    :param detection_result: result of landmark detection
-    :param preview: Whether to display the original image
-    :param annotated: Whether to annotate landmarks with their coordinates
-    :return: Image with landmarks
-    """
+    def pose_detection(self, input_image, timestamp=None):
+        # Detect pose landmarks from the current frame
+        pass
 
-    # Fetch the image coordinates of the pose landmarks for drawing the pose on the image
-    pose_landmarks_list = detection_result.pose_landmarks
+    def draw_landmarks_on_image(self, img, detection_result):
+        """
+        Draw landmarks on the input image.
 
-    # - Loop through the detected poses to visualize
-    for idx in range(len(pose_landmarks_list)):
-        pose_landmarks = pose_landmarks_list[idx]
+        :param rgb_image: input image
+        :param detection_result: result of landmark detection
+        :param preview: Whether to display the original image
+        :param annotated: Whether to annotate landmarks with their coordinates
+        :return: Image with landmarks
+        """
 
-        # -- Draw the pose landmarks
-        pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
-        pose_landmarks_proto.landmark.extend([
-          landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in pose_landmarks
-        ])
-        solutions.drawing_utils.draw_landmarks(
-          img,
-          pose_landmarks_proto,
-          solutions.pose.POSE_CONNECTIONS,
-          solutions.drawing_styles.get_default_pose_landmarks_style())
+        # Fetch the image coordinates of the pose landmarks for drawing the pose on the image
+        pose_landmarks_list = detection_result.pose_landmarks
 
-    return img
+        # - Loop through the detected poses to visualize
+        for idx in range(len(pose_landmarks_list)):
+            pose_landmarks = pose_landmarks_list[idx]
+
+            # -- Draw the pose landmarks
+            pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
+            pose_landmarks_proto.landmark.extend([
+              landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in pose_landmarks
+            ])
+            solutions.drawing_utils.draw_landmarks(
+              img,
+              pose_landmarks_proto,
+              solutions.pose.POSE_CONNECTIONS,
+              solutions.drawing_styles.get_default_pose_landmarks_style())
+
+        return img
 
 
 def get_parameters_names():

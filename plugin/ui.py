@@ -10,13 +10,15 @@ import os
 import platform
 import subprocess
 
+from plugin.mediapipe import LIVE_STREAM, IMAGE
+
 BACKGROUND_COLOR = "#333333"
 TEXT_COLOR = "white"
 
 BACKGROUND_VTUBE_STUDIO = '#fb58bb'
 BACKGROUND_NIZIMA = '#692fc9'
 
-WINDOW_SIZE = "340x440"
+WINDOW_SIZE = "340x540"
 
 NIZIMA_LIVE = 'NizimaLIVE'
 VTUBE_STUDIO = 'VTube Studio'
@@ -38,12 +40,14 @@ def window_tracking_configuration():
                 api_port = 22022
             else:
                 api_port = 8001
+        tracking_mode = selected_tracking_mode.get()
 
         settings = {
             'camera_url': camera_url,
             'preview_enabled': show_camera_view_var.get(),
             'port': api_port,
-            'software': software
+            'software': software,
+            'tracking_mode': tracking_mode
         }
 
         if available_cameras:
@@ -75,6 +79,15 @@ def window_tracking_configuration():
             vtube_port_input.config(state="disabled")
             vtube_port_label.config(fg="gray")
             vtube_name_label.config(fg="gray")
+
+    def toggle_inputs_tracking_mode():
+        """Enable or disable the input fields based on the selected software."""
+        if selected_tracking_mode.get() == LIVE_STREAM:
+            mode_live_stream_label.config(fg="white")
+            mode_image_label.config(fg="gray")
+        elif selected_tracking_mode.get() == IMAGE:
+            mode_image_label.config(fg="white")
+            mode_live_stream_label.config(fg="gray")
 
     root = tk.Tk()
     root.title(f"VTS Fullbody Tracking {VERSION} - Settings")
@@ -138,17 +151,14 @@ def window_tracking_configuration():
     vtube_studio_frame.pack(fill=tk.X, pady=(0, 5))
 
     # --------------
-    # Use ttk to add styling to button
-    style = ttk.Style(root)
-    style.configure('TButton', bg='skyblue', fg='white')
 
-    # Chargement des icônes
+    # load vtube studio icon
     image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_VTUBE_STUDIO))
     image = Image.open(image.replace("plugin\\", ""))
     image_resized = image.resize((25, 25))
     vtube_icon = ImageTk.PhotoImage(image_resized)
-    # Charger l'image avec Pillow
 
+    # load nizima icon
     image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_NIZIMA))
     image = Image.open(image.replace("plugin\\", ""))
     image_resized = image.resize((25, 25))
@@ -166,7 +176,6 @@ def window_tracking_configuration():
     vtube_row.pack(anchor="w", pady=5)
 
     vtube_radio = tk.Radiobutton(vtube_row, variable=selected_software, value=VTUBE_STUDIO, command=toggle_inputs, bg=BACKGROUND_COLOR )
-
     vtube_radio.pack(side="left", padx=5)
 
     vtube_icon_label = tk.Label(vtube_row, image=vtube_icon, bg=BACKGROUND_COLOR, width=18)
@@ -202,12 +211,38 @@ def window_tracking_configuration():
     nizima_port_input.pack(side="left", padx=5)
     nizima_port_input.insert(0, "22022")  # Default port
 
-    # Initialiser les états des champs
+    # Init state fields
     toggle_inputs()
+
+    # -- Tracking mode
+    tracking_setting_frame = create_section_header(root, "Tracking Settings")
+    tracking_setting_frame.pack(fill=tk.X, pady=(0, 5))
+
+    # Variable to track the selected software
+    selected_tracking_mode = tk.StringVar(value=LIVE_STREAM)
+
+    tracking_mode_frame = tk.Frame(root, padx=30, bg=BACKGROUND_COLOR)
+    tracking_mode_frame.pack(anchor="w", pady=5)
+
+    live_stream_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
+    live_stream_row.pack(anchor="w", pady=5)
+    mode_live_stream_radio = tk.Radiobutton(live_stream_row, variable=selected_tracking_mode, value=LIVE_STREAM, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
+    mode_live_stream_radio.pack(side="left", padx=5)
+    mode_live_stream_label = tk.Label(live_stream_row, text="Smooth and Slow", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
+    mode_live_stream_label.pack(side="left", padx=5)
+
+    image_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
+    image_row.pack(anchor="w", pady=5)
+    mode_image_radio = tk.Radiobutton(image_row, variable=selected_tracking_mode, value=IMAGE, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
+    mode_image_radio.pack(side="left", padx=5)
+    mode_image_label = tk.Label(image_row, text="Fast and Shaky", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
+    mode_image_label.pack(side="left", padx=5)
 
     # -- Start Tracking Button
     start_tracking_button = tk.Button(root, text="Start Tracking", command=root.quit, font=('Arial', 14, 'bold'), bg='#07121d', fg='white', activebackground='#3c9fbb', activeforeground='white', bd=0)
     start_tracking_button.pack(pady=(5, 20), padx=20, fill=tk.X)
+
+    toggle_inputs_tracking_mode()
 
     root.mainloop()
 

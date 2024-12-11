@@ -8,7 +8,7 @@ import os
 
 from info import VERSION
 from plugin.ui import window_tracking_configuration, NIZIMA_LIVE, VTUBE_STUDIO
-from plugin.mediapipe import draw_landmarks_on_image, get_bodyparts_values, init_mediapipe_options
+from plugin.mediapipe import get_bodyparts_values, MediapipeTracking, LIVE_STREAM, IMAGE
 from plugin.vtube_studio import connection_vts, create_parameters_vts, send_paramters_vts
 
 from plugin.nizima import Nizima
@@ -30,7 +30,8 @@ vts_api = {"version": "1.0", "name": "VTubeStudioPublicAPI", "port": 8001}
 
 async def main(settings):
     # ----- MEDIAPIPE: LANDMARKER CONFIGURATION -----------
-    options = init_mediapipe_options(model_path)
+    mt = MediapipeTracking(mode=settings['tracking_mode'])
+    options = mt.init_mediapipe_options(model_path)
     PoseLandmarker = mp.tasks.vision.PoseLandmarker
 
     connection = False
@@ -91,7 +92,11 @@ async def main(settings):
                     timestamp += 1
                     # Detect pose landmarks from the current frame
                     input_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-                    RESULT = landmarker.detect(input_image)
+                    if mt.mode == LIVE_STREAM:
+                        landmarker.detect_async(input_image, timestamp)
+                        RESULT = mt.result
+                    else:
+                        RESULT = landmarker.detect(input_image) # IMAGE
 
                     # Display Image for tracking window
                     image = render_image(input_image, settings['preview_enabled'])
@@ -99,7 +104,7 @@ async def main(settings):
                         if RESULT.pose_world_landmarks:
                             # Get coordinates
                             parameters = RESULT
-                            image = draw_landmarks_on_image(image, RESULT)
+                            image = mt.draw_landmarks_on_image(image, RESULT)
                         else:
                             error_pose_estimation(image)
 
