@@ -228,14 +228,14 @@ def window_tracking_configuration():
     live_stream_row.pack(anchor="w", pady=5)
     mode_live_stream_radio = tk.Radiobutton(live_stream_row, variable=selected_tracking_mode, value=LIVE_STREAM, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
     mode_live_stream_radio.pack(side="left", padx=5)
-    mode_live_stream_label = tk.Label(live_stream_row, text="Smooth and Slow", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
+    mode_live_stream_label = tk.Label(live_stream_row, text="Smooth (Slower)", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
     mode_live_stream_label.pack(side="left", padx=5)
 
     image_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
     image_row.pack(anchor="w", pady=5)
     mode_image_radio = tk.Radiobutton(image_row, variable=selected_tracking_mode, value=IMAGE, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
     mode_image_radio.pack(side="left", padx=5)
-    mode_image_label = tk.Label(image_row, text="Fast and Shaky", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
+    mode_image_label = tk.Label(image_row, text="Fast (Less Stable)", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
     mode_image_label.pack(side="left", padx=5)
 
     # -- Start Tracking Button
