@@ -27,7 +27,7 @@ python app.py
 ### Build executable
 
 ```shell
- pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.9 --add-data='models/*:models' --add-data='*.png:.' -F -w 
+ pyinstaller ./app.py -n VTS_Fullbody_Tracking-0.1.10 --add-data='models/*:models' --add-data="venv/Lib/site-packages/mediapipe/modules/pose_landmark/*:mediapipe/modules/pose_landmark" --add-data="venv/Lib/site-packages/mediapipe/modules/pose_detection/*:mediapipe/modules/pose_detection" --add-data='*.png:.' -F -w'
 ```
 
 

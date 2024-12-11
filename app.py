@@ -1,5 +1,4 @@
 import mediapipe as mp
-from mediapipe.tasks import python
 import numpy as np
 import pyvts
 import asyncio
@@ -8,13 +7,13 @@ import os
 
 from info import VERSION
 from plugin.ui import window_tracking_configuration, NIZIMA_LIVE, VTUBE_STUDIO
-from plugin.mediapipe import get_bodyparts_values, MediapipeTracking, LIVE_STREAM, IMAGE
+from plugin.mediapipe import get_bodyparts_values, LIVE_STREAM, IMAGE
 from plugin.vtube_studio import connection_vts, create_parameters_vts, send_paramters_vts
 
 from plugin.nizima import Nizima
 
 RESULT = None
-
+BG_COLOR = (192, 192, 192) # gray
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'models/pose_landmarker_full.task'))
 icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'icon.png'))
 
@@ -30,9 +29,10 @@ vts_api = {"version": "1.0", "name": "VTubeStudioPublicAPI", "port": 8001}
 
 async def main(settings):
     # ----- MEDIAPIPE: LANDMARKER CONFIGURATION -----------
-    mt = MediapipeTracking(mode=settings['tracking_mode'])
-    options = mt.init_mediapipe_options(model_path)
-    PoseLandmarker = mp.tasks.vision.PoseLandmarker
+    mode = settings['tracking_mode']
+    mp_drawing = mp.solutions.drawing_utils
+    mp_drawing_styles = mp.solutions.drawing_styles
+    mp_pose = mp.solutions.pose
 
     connection = False
     software = settings['software']
@@ -72,7 +72,6 @@ async def main(settings):
     # ---- LIVE TRACKING ----------------
     if connection:
         parameters = None
-        timestamp = 0
 
         # -- Camera connection
         camera_setting = settings['camera_id'] if not settings['camera_url'] else settings['camera_url']
@@ -82,39 +81,57 @@ async def main(settings):
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
-        #print('========== START LIVE TRACKING =========')
-        with PoseLandmarker.create_from_options(options) as landmarker:
+        with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as pose:
+            #print('========== START LIVE TRACKING =========')
             # -- LOOP Through Video
             while cap.isOpened():
-                ret, frame = cap.read()
+                success, frame = cap.read()
 
-                if ret:
-                    timestamp += 1
-                    # Detect pose landmarks from the current frame
+                if success:
+                    # current frame
                     input_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
-                    if mt.mode == LIVE_STREAM:
-                        landmarker.detect_async(input_image, timestamp)
-                        RESULT = mt.result
+
+                    # -- POSE DETECTION ----------------
+                    # Detect pose landmarks from the current frame
+                    if mode == LIVE_STREAM:
+                        frame.flags.writeable = False
+                        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        RESULT = pose.process(image)
                     else:
-                        RESULT = landmarker.detect(input_image) # IMAGE
+                        # Convert the BGR image to RGB before processing.
+                        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        RESULT = pose.process(image)
 
                     # Display Image for tracking window
                     image = render_image(input_image, settings['preview_enabled'])
+
                     if RESULT:
+                       # -- DRAW LANDMARKS --------
                         if RESULT.pose_world_landmarks:
                             # Get coordinates
                             parameters = RESULT
-                            image = mt.draw_landmarks_on_image(image, RESULT)
+                            if mode == LIVE_STREAM:
+                                # Draw the pose annotation on the image.
+                                image.flags.writeable = True
+
+                            # Flip the image horizontally for a selfie-view display.
+                            #cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
+
+                            # Draw pose landmarks on the image.
+                            mp_drawing.draw_landmarks(
+                                image,
+                                parameters.pose_landmarks,
+                                mp_pose.POSE_CONNECTIONS,
+                                landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
                         else:
                             error_pose_estimation(image)
 
                     # - WINDOW : CAMERA TRACKING
                     cv2.imshow(f'VTS FullBody Tracking {VERSION}', image)
 
-                    # SEND DATA TO VTUBE STUDIO
+                    # SEND DATA
                     if parameters:
                         data = get_bodyparts_values(parameters)
-
                         if software == NIZIMA_LIVE:
                             data = [{"Id": key, "Value": value*10} for key, value in data.items()]
                             await nz.set_live_parameter_values(data)

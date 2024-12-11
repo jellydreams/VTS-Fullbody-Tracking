@@ -95,74 +95,6 @@ def get_part_from_name(i):
             return part
     raise None
 
-
-class MediapipeTracking:
-    def __init__(self, mode=LIVE_STREAM):
-        self.result = None
-        self.options = None
-        self.mode = mode
-
-    def init_mediapipe_options(self, model_path):
-        # Create a PoseLandmarker object
-        BaseOptions = mp.tasks.BaseOptions
-        PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
-        VisionRunningMode = mp.tasks.vision.RunningMode
-
-        if self.mode == LIVE_STREAM:
-            PoseLandmarkerResult = mp.tasks.vision.PoseLandmarkerResult
-
-            def get_result(result: PoseLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
-                print('pose landmarker result: {}'.format(result))
-                self.result = result
-
-            self.options = PoseLandmarkerOptions(
-               base_options=BaseOptions(model_asset_path=model_path),
-               running_mode=VisionRunningMode.LIVE_STREAM,
-               result_callback=get_result  # LIVE_STREAM
-            )
-        else:
-            self.options = PoseLandmarkerOptions(
-                base_options=BaseOptions(model_asset_path=model_path),
-                running_mode=VisionRunningMode.IMAGE,
-            )
-        return self.options
-
-    def pose_detection(self, input_image, timestamp=None):
-        # Detect pose landmarks from the current frame
-        pass
-
-    def draw_landmarks_on_image(self, img, detection_result):
-        """
-        Draw landmarks on the input image.
-
-        :param rgb_image: input image
-        :param detection_result: result of landmark detection
-        :param preview: Whether to display the original image
-        :param annotated: Whether to annotate landmarks with their coordinates
-        :return: Image with landmarks
-        """
-
-        # Fetch the image coordinates of the pose landmarks for drawing the pose on the image
-        pose_landmarks_list = detection_result.pose_landmarks
-
-        # - Loop through the detected poses to visualize
-        for idx in range(len(pose_landmarks_list)):
-            pose_landmarks = pose_landmarks_list[idx]
-
-            # -- Draw the pose landmarks
-            pose_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
-            pose_landmarks_proto.landmark.extend([
-              landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in pose_landmarks
-            ])
-            solutions.drawing_utils.draw_landmarks(
-              img,
-              pose_landmarks_proto,
-              solutions.pose.POSE_CONNECTIONS,
-              solutions.drawing_styles.get_default_pose_landmarks_style())
-
-        return img
-
-
 def get_parameters_names():
     bodyparts_names = [part.name for part in BodyParts]
     # Remove unused parameter names
@@ -185,7 +117,7 @@ def get_bodyparts_values(parameters):
     values = {}
 
     # Get coordinates from hip as midpoint
-    parameters_world = parameters.pose_world_landmarks[0]
+    parameters_world = parameters.pose_world_landmarks.landmark#[0]
 
     # Go through each tracked body part
     for bodypart in BodyParts:
@@ -204,7 +136,7 @@ def get_bodyparts_values(parameters):
             i += 1
 
     # Retrieve coordinates from the image
-    parameters_img = parameters.pose_landmarks[0]
+    parameters_img = parameters.pose_landmarks.landmark
 
     values = calcul_body_position(values, parameters_img)
     values = calcul_hips_position(values, parameters_img)

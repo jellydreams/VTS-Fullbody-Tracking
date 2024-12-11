@@ -1,4 +1,4 @@
-mediapipe
+mediapipe>=0.10.18
 pyvts
 opencv-python
 numpy
