@@ -1,2 +1,2 @@
-VERSION = '0.1.11'
-ICON_PATH = "icon.png"
+VERSION = '1.0'
+ICON_PATH = "icons/icon.png"

@@ -103,7 +103,7 @@ def get_parameters_names():
     # Add custom names to the list
     # Note: If a parameter is not created and data is sent, all values will be set to 0
     bodyparts_names.extend(['HIPS_POSITION', 'BODY', 'HIPS_ROTATION', 'CLAVICLES'])
-    parameters_names = [part + '_' + angle for part in bodyparts_names for angle in ['X', 'Y', 'Z', 'VISIBILITY']]
+    parameters_names = [part + '_' + angle for part in bodyparts_names for angle in ['X', 'Y', 'Z']] #, 'VISIBILITY']]
 
     return parameters_names
 
@@ -158,7 +158,7 @@ def calcul_data(part, center, name):
     x_name = name + '_X'
     y_name = name + '_Y'
     z_name = name + '_Z'
-    v_name = name + '_VISIBILITY'
+    #v_name = name + '_VISIBILITY'
 
     x = (part.x - center.x) * 10
     y = (part.y - center.y) * 10
@@ -168,7 +168,7 @@ def calcul_data(part, center, name):
         x_name: x,
         y_name: y,
         z_name: z,
-        v_name: part.visibility,
+        #v_name: part.visibility,
         }
 
     return data
@@ -180,7 +180,7 @@ def calcul_body_position(values, parameters_img):
     values['BODY_Y'] = (parameters_img[BodyParts.RIGHT_HIP.value].y + parameters_img[BodyParts.LEFT_HIP.value].y) / 2
     values['BODY_Z'] = (parameters_img[BodyParts.RIGHT_HIP.value].z + parameters_img[BodyParts.LEFT_HIP.value].z) / 2
 
-    values['BODY_VISIBILITY'] = 1.0
+    #values['BODY_VISIBILITY'] = 1.0
     return values
 
 
@@ -195,7 +195,7 @@ def calcul_hips_position(values, parameters_img):
     values['HIPS_POSITION_Y'] = (values['BODY_Y'] - body_center_y) * 10
     values['HIPS_POSITION_Z'] = (values['BODY_Z'] - body_center_z) * 10
 
-    values['HIPS_POSITION_VISIBILITY'] = 1.0
+    #values['HIPS_POSITION_VISIBILITY'] = 1.0
     return values
 
 
@@ -211,5 +211,5 @@ def calcul_clavicles_position(values, parameters_world):
     values['CLAVICLES_X'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].x * 10
     values['CLAVICLES_Y'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].y * 10
     values['CLAVICLES_Z'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].z * 10
-    values['CLAVICLES_VISIBILITY'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].visibility
+    #values['CLAVICLES_VISIBILITY'] = parameters_world[BodyParts.RIGHT_SHOULDER.value].visibility
     return values

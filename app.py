@@ -10,7 +10,7 @@ from info import VERSION
 
 
 class Plugin:
-    WINDOW_SIZE = "340x590"
+    WINDOW_SIZE = "340x435"
 
     def __init__(self):
         self.settings = {}
@@ -58,14 +58,6 @@ class Plugin:
         root.configure(bg='#333333')
 
         ui = UI(root)
-        ui.set_icons()
-        ui.set_header()
-        ui.set_available_cameras()
-        ui.set_external_camera()
-        ui.set_camera_view()
-        ui.set_camera_mirror()
-        ui.set_connection_software()
-        ui.set_tracking_mode()
 
         def on_start():
             self.settings = ui.get_configuration()

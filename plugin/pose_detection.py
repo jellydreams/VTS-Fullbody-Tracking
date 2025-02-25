@@ -8,7 +8,7 @@ import numpy as np
 class PoseDetection:
 
     def __init__(self, settings):
-        self.mode = settings['tracking_mode']
+        #self.mode = settings['tracking_mode']
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.mp_pose = mp.solutions.pose
@@ -42,8 +42,8 @@ class PoseDetection:
 
             # -- POSE DETECTION ----------------
             # Detect pose landmarks from the current frame
-            if self.mode == LIVE_STREAM:
-                frame.flags.writeable = False
+            #if self.mode == LIVE_STREAM:
+            frame.flags.writeable = False
             self.results = pose.process(image)
 
             # Display Image for tracking window
@@ -63,9 +63,9 @@ class PoseDetection:
         if self.results.pose_world_landmarks:
             # Get coordinates
             self.parameters = self.results
-            if self.mode == LIVE_STREAM:
-                # Draw the pose annotation on the image.
-                image.flags.writeable = True
+            #if self.mode == LIVE_STREAM:
+            # Draw the pose annotation on the image.
+            image.flags.writeable = True
 
             # Draw pose landmarks on the image.
             self.mp_drawing.draw_landmarks(
@@ -80,15 +80,15 @@ class PoseDetection:
     def render_image(self, image):
         # -- Display the original input or an empty image as a base
         image = image.numpy_view()
-        if self.settings['preview_enabled']:
-            # Use the input image as a base if preview configuration is enabled
-            image = np.copy(image)
-            if self.settings['camera_mirror']:
-                image = cv2.flip(image, 1)
-        else:
-            # Create an empty image with the same dimensions as the input image
-            height, width, _ = image.shape
-            image = np.zeros((height, width, 3), dtype=np.uint8)
+        #if self.settings['preview_enabled']:
+        #    # Use the input image as a base if preview configuration is enabled
+        #    image = np.copy(image)
+        #    if self.settings['camera_mirror']:
+        #        image = cv2.flip(image, 1)
+        #else:
+        # Create an empty image with the same dimensions as the input image
+        height, width, _ = image.shape
+        image = np.zeros((height, width, 3), dtype=np.uint8)
         return image
 
 

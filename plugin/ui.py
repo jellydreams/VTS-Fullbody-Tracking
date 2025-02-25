@@ -25,8 +25,8 @@ class UI:
         self.selected_software = None
         self.nizima_port_input = None
         self.vtube_port_input = None
-        self.selected_tracking_mode = None
-        self.show_camera_view_var = None
+        #self.selected_tracking_mode = None
+        # self.show_camera_view_var = None
         self.camera_mirror_var = None
         self.camera_selection = None
         self.available_cameras = None
@@ -35,6 +35,18 @@ class UI:
         self.icon_photo = None
         self.nizima_icon = None
         self.vtube_studio_icon = None
+
+        self.set_ui()
+
+    def set_ui(self):
+        self.set_icons()
+        self.set_header()
+        self.set_available_cameras()
+        self.set_external_camera()
+        #ui.set_camera_view()
+        self.set_camera_mirror()
+        self.set_connection_software()
+        # self.set_tracking_mode()
 
     def get_configuration(self):
         """ Retrieves configuration values from UI form """
@@ -46,15 +58,15 @@ class UI:
                 api_port = 22022
             else:
                 api_port = 8001
-        tracking_mode = self.selected_tracking_mode.get()
+        # tracking_mode = self.selected_tracking_mode.get()
 
         settings = {
             'camera_url': camera_url,
-            'preview_enabled': self.show_camera_view_var.get(),
+            #'preview_enabled': self.show_camera_view_var.get(),
             'camera_mirror': self.camera_mirror_var.get(),
             'port': api_port,
             'software': software,
-            'tracking_mode': tracking_mode
+            #'tracking_mode': tracking_mode
         }
 
         if self.available_cameras:
@@ -67,7 +79,7 @@ class UI:
     def set_icons(self):
         # Set window icon
         icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
-        icon_image = Image.open(icon_path.replace("plugin\\", ""))
+        icon_image = Image.open(icon_path)
         icon_resized_for_window = icon_image.resize((32, 32))
         window_icon = ImageTk.PhotoImage(icon_resized_for_window)
         self.root.iconphoto(False, window_icon)
@@ -78,7 +90,7 @@ class UI:
 
         # Load and resize icon image for window and header
         icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
-        icon_image = Image.open(icon_path.replace("plugin\\", ""))
+        icon_image = Image.open(icon_path)#.replace("plugin\\", ""))
         icon_photo = icon_image.resize((50, 50))
         self.icon_photo = ImageTk.PhotoImage(icon_photo)
         icon_label = tk.Label(header_frame, image=self.icon_photo, bg='#222222')
@@ -117,11 +129,11 @@ class UI:
         self.camera_url_entry = tk.Entry(camera_url_frame, validate="key", font=('Arial', 10), width=30)
         self.camera_url_entry.pack(side=tk.LEFT, fill=tk.X)
 
-    def set_camera_view(self):
-        # Option for showing original input when displaying tracking pose
-        self.show_camera_view_var = tk.BooleanVar()
-        show_camera_view_checkbox = tk.Checkbutton(self.root, text="Show Camera View", variable=self.show_camera_view_var, bg='#333333', fg='white', activeforeground='white', activebackground="#333333", selectcolor='black', font=('Arial', 10))
-        show_camera_view_checkbox.pack(anchor='w', padx=20, pady=(0, 10))
+    #def set_camera_view(self):
+    #    # Option for showing original input when displaying tracking pose
+    #    self.show_camera_view_var = tk.BooleanVar()
+    #    show_camera_view_checkbox = tk.Checkbutton(self.root, text="Show Camera View", variable=self.show_camera_view_var, bg='#333333', fg='white', activeforeground='white', activebackground="#333333", selectcolor='black', font=('Arial', 10))
+    #    show_camera_view_checkbox.pack(anchor='w', padx=20, pady=(0, 10))
 
     def set_camera_mirror(self):
         # Option for showing original input when displaying tracking pose
@@ -130,8 +142,8 @@ class UI:
         camera_mirror_checkbox.pack(anchor='w', padx=20, pady=(0, 10))
 
     def set_connection_software(self):
-        ICON_NIZIMA = 'icon_nizimalive.png'
-        ICON_VTUBE_STUDIO = 'icon_vtubestudio.png'
+        ICON_NIZIMA = 'icons/icon_nizimalive.png'
+        ICON_VTUBE_STUDIO = 'icons/icon_vtubestudio.png'
 
         # -- Vtube Studio Settings
         vtube_studio_frame = create_section_header(self.root, "Connection Settings")
@@ -163,13 +175,13 @@ class UI:
 
         # load vtube studio icon
         image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_VTUBE_STUDIO))
-        image = Image.open(image.replace("plugin\\", ""))
+        image = Image.open(image)
         image_resized = image.resize((25, 25))
         self.vtube_studio_icon = ImageTk.PhotoImage(image_resized)
 
         # load nizima icon
         image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_NIZIMA))
-        image = Image.open(image.replace("plugin\\", ""))
+        image = Image.open(image)
         image_resized = image.resize((25, 25))
         self.nizima_icon = ImageTk.PhotoImage(image_resized)
 
@@ -224,40 +236,40 @@ class UI:
         # Init state fields
         toggle_inputs()
 
-    def set_tracking_mode(self):
-        def toggle_inputs_tracking_mode():
-            """Enable or disable the input fields based on the selected software."""
-            if self.selected_tracking_mode.get() == LIVE_STREAM:
-                mode_live_stream_label.config(fg="white")
-                mode_image_label.config(fg="gray")
-            elif self.selected_tracking_mode.get() == IMAGE:
-                mode_image_label.config(fg="white")
-                mode_live_stream_label.config(fg="gray")
-
-        # -- Tracking mode
-        tracking_setting_frame = create_section_header(self.root, "Tracking Settings")
-        tracking_setting_frame.pack(fill=tk.X, pady=(0, 5))
-
-        # Variable to track the selected software
-        self.selected_tracking_mode = tk.StringVar(value=LIVE_STREAM)
-
-        tracking_mode_frame = tk.Frame(self.root, padx=30, bg=BACKGROUND_COLOR)
-        tracking_mode_frame.pack(anchor="w", pady=5)
-
-        live_stream_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
-        live_stream_row.pack(anchor="w", pady=5)
-        mode_live_stream_radio = tk.Radiobutton(live_stream_row, variable=self.selected_tracking_mode, value=LIVE_STREAM, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
-        mode_live_stream_radio.pack(side="left", padx=5)
-        mode_live_stream_label = tk.Label(live_stream_row, text="Smooth (Slower)", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
-        mode_live_stream_label.pack(side="left", padx=5)
-
-        image_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
-        image_row.pack(anchor="w", pady=5)
-        mode_image_radio = tk.Radiobutton(image_row, variable=self.selected_tracking_mode, value=IMAGE, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
-        mode_image_radio.pack(side="left", padx=5)
-        mode_image_label = tk.Label(image_row, text="Fast (Less Stable)", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
-        mode_image_label.pack(side="left", padx=5)
-        toggle_inputs_tracking_mode()
+    # def set_tracking_mode(self):
+    #    def toggle_inputs_tracking_mode():
+    #        """Enable or disable the input fields based on the selected software."""
+    #        if self.selected_tracking_mode.get() == LIVE_STREAM:
+    #            mode_live_stream_label.config(fg="white")
+    #            mode_image_label.config(fg="gray")
+    #        elif self.selected_tracking_mode.get() == IMAGE:
+    #            mode_image_label.config(fg="white")
+    #            mode_live_stream_label.config(fg="gray")
+    #
+    #    # -- Tracking mode
+    #    tracking_setting_frame = create_section_header(self.root, "Tracking Settings")
+    #    tracking_setting_frame.pack(fill=tk.X, pady=(0, 5))
+    #
+    #    # Variable to track the selected software
+    #    self.selected_tracking_mode = tk.StringVar(value=LIVE_STREAM)
+    #
+    #    tracking_mode_frame = tk.Frame(self.root, padx=30, bg=BACKGROUND_COLOR)
+    #    tracking_mode_frame.pack(anchor="w", pady=5)
+    #
+    #    live_stream_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
+    #    live_stream_row.pack(anchor="w", pady=5)
+    #    mode_live_stream_radio = tk.Radiobutton(live_stream_row, variable=self.selected_tracking_mode, value=LIVE_STREAM, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
+    #    mode_live_stream_radio.pack(side="left", padx=5)
+    #    mode_live_stream_label = tk.Label(live_stream_row, text="Smooth (Slower)", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
+    #    mode_live_stream_label.pack(side="left", padx=5)
+    #
+    #    image_row = tk.Frame(tracking_mode_frame, bg=BACKGROUND_COLOR)
+    #   image_row.pack(anchor="w", pady=5)
+    #    mode_image_radio = tk.Radiobutton(image_row, variable=self.selected_tracking_mode, value=IMAGE, command=toggle_inputs_tracking_mode, bg=BACKGROUND_COLOR)
+    #    mode_image_radio.pack(side="left", padx=5)
+    #    mode_image_label = tk.Label(image_row, text="Fast (Less Stable)", bg=BACKGROUND_COLOR, fg=TEXT_COLOR, anchor="w")
+    #    mode_image_label.pack(side="left", padx=5)
+    #    toggle_inputs_tracking_mode()
 
 
 def get_available_cameras_names():
