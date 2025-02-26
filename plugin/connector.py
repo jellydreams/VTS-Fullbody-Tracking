@@ -13,7 +13,7 @@ NIZIMA_LIVE = 'NizimaLIVE'
 VTUBE_STUDIO = 'VTube Studio'
 
 
-icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../icon.png'))
+icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'icons/icon.png'))
 
 plugin_info = {
     "plugin_name": "VTS_Fullbody_Tracking",

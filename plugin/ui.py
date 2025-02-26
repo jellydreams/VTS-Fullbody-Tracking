@@ -76,23 +76,23 @@ class UI:
 
         return settings
 
+    def load_icon(self, icon_path, resize=(32, 32)):
+        image = os.path.abspath(os.path.join(os.path.dirname(__file__), icon_path))
+        image = Image.open(image)
+        image_resized = image.resize(resize)
+        return ImageTk.PhotoImage(image_resized)
+
     def set_icons(self):
         # Set window icon
-        icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
-        icon_image = Image.open(icon_path)
-        icon_resized_for_window = icon_image.resize((32, 32))
-        window_icon = ImageTk.PhotoImage(icon_resized_for_window)
-        self.root.iconphoto(False, window_icon)
+        window_icon = self.load_icon(ICON_PATH, (32, 32))
+        self.root.iconphoto(True, window_icon)
 
     def set_header(self):
         header_frame = tk.Frame(self.root, bg='#222222')
         header_frame.pack(fill=tk.X)
 
-        # Load and resize icon image for window and header
-        icon_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_PATH))
-        icon_image = Image.open(icon_path)#.replace("plugin\\", ""))
-        icon_photo = icon_image.resize((50, 50))
-        self.icon_photo = ImageTk.PhotoImage(icon_photo)
+        self.icon_photo = self.load_icon(ICON_PATH, (50, 50))
+
         icon_label = tk.Label(header_frame, image=self.icon_photo, bg='#222222')
         icon_label.pack(side=tk.LEFT, padx=10, pady=10)
 
@@ -173,17 +173,9 @@ class UI:
                 vtube_port_label.config(fg="gray")
                 vtube_name_label.config(fg="gray")
 
-        # load vtube studio icon
-        image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_VTUBE_STUDIO))
-        image = Image.open(image)
-        image_resized = image.resize((25, 25))
-        self.vtube_studio_icon = ImageTk.PhotoImage(image_resized)
-
-        # load nizima icon
-        image = os.path.abspath(os.path.join(os.path.dirname(__file__), ICON_NIZIMA))
-        image = Image.open(image)
-        image_resized = image.resize((25, 25))
-        self.nizima_icon = ImageTk.PhotoImage(image_resized)
+        # load software icons
+        self.vtube_studio_icon = self.load_icon(ICON_VTUBE_STUDIO, (25, 25))
+        self.nizima_icon = self.load_icon(ICON_NIZIMA, (25, 25))
 
         # Variable to track the selected software
         self.selected_software = tk.StringVar(value=VTUBE_STUDIO)
