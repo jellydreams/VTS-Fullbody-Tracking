@@ -11,7 +11,7 @@
 
 [discord-badge]: https://img.shields.io/badge/Join_Discord-indigo?logo=discord&logoColor=white&color=7289da
 [twitter-badge]: https://img.shields.io/twitter/follow/_JellyDreams_.svg?style=social
-[github-release-badge]: https://img.shields.io/github/v/release/jellydreams/VTS-Fullbody-Tracking?label=ALPHA%20release
+[github-release-badge]: https://img.shields.io/github/v/release/jellydreams/VTS-Fullbody-Tracking?label=Beta%20release
 
 Full-body tracking for Live2D VTubers, using a camera.
 - **Arms**: Shoulders, Elbow, Wrists
@@ -21,13 +21,6 @@ Full-body tracking for Live2D VTubers, using a camera.
 - **Hands**: Pinkies Knuckles, Index Knuckles, Thumb Knuckles
 
 Plugin can be used with [VTube Studio](https://denchisoft.com/) or [Nizima LIVE](https://nizimalive.com/en/)
-
-## Join the Alpha
-This plugin can be fixed and improved with feedback.
-
-Join [Discord Server](https://discord.gg/9K9gejWQ3s) to get help, ask questions, share tests or give feedbacks.<br>
-
-Visit the [Wiki](https://github.com/jellydreams/VTS-Fullbody-Tracking/wiki) or [Website](https://vts-fullbody-tracking.gitlab.io/) for more information on how the plugin works.
 
 ## Run the Plugin
 
